@@ -1,0 +1,368 @@
+{
+  "header": {
+    "title": "CureX40 Pharmacy",
+    "subtitle": "Your trusted healthcare partner",
+    "searchPlaceholder": "Search medications, brands, or conditions..."
+  },
+  "medications": {
+    "title": "Medications",
+    "subtitle": "Browse our extensive medication catalog",
+    "categories": {
+      "analgesics": "Pain Relief",
+      "antibiotics": "Antibiotics",
+      "antihistamines": "Allergy Relief",
+      "antacids": "Digestive Health",
+      "vitamins": "Vitamins & Supplements",
+      "cardiovascular": "Heart & Blood Pressure",
+      "respiratory": "Respiratory Health",
+      "dermatological": "Skin Care",
+      "gastrointestinal": "Digestive System",
+      "neurological": "Neurological",
+      "hormonal": "Hormonal Therapy",
+      "other": "Other Medications"
+    },
+    "forms": {
+      "tablet": "Tablet",
+      "capsule": "Capsule",
+      "liquid": "Liquid",
+      "injection": "Injection",
+      "cream": "Cream",
+      "ointment": "Ointment",
+      "drops": "Drops",
+      "inhaler": "Inhaler",
+      "patch": "Patch",
+      "suppository": "Suppository"
+    },
+    "details": {
+      "genericName": "Generic Name",
+      "brand": "Brand",
+      "dosage": "Dosage",
+      "form": "Form",
+      "category": "Category",
+      "activeIngredients": "Active Ingredients",
+      "contraindications": "Contraindications",
+      "sideEffects": "Side Effects",
+      "manufacturer": "Manufacturer",
+      "expiryDate": "Expiry Date",
+      "batchNumber": "Batch Number",
+      "requiresPrescription": "Requires Prescription",
+      "prescriptionRequired": "Prescription Required",
+      "prescriptionNotRequired": "Available Over-the-Counter",
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock",
+      "lowStock": "Low Stock ({{count}} remaining)",
+      "price": "Price",
+      "addToCart": "Add to Cart",
+      "quantity": "Quantity",
+      "instructions": "Usage Instructions"
+    },
+    "filters": {
+      "title": "Filters",
+      "category": "Category",
+      "form": "Medication Form",
+      "prescription": "Prescription Status",
+      "availability": "Availability",
+      "priceRange": "Price Range",
+      "manufacturer": "Manufacturer",
+      "clearAll": "Clear All Filters",
+      "applyFilters": "Apply Filters",
+      "any": "Any",
+      "available": "Available",
+      "requiresPrescription": "Prescription Required",
+      "overTheCounter": "Over-the-Counter"
+    },
+    "search": {
+      "results": "Search Results",
+      "noResults": "No medications found matching your criteria",
+      "resultsCount": "{{count}} medication found",
+      "resultsCount_plural": "{{count}} medications found",
+      "suggestions": "Did you mean:",
+      "popularSearches": "Popular Searches",
+      "recentSearches": "Recent Searches"
+    }
+  },
+  "prescriptions": {
+    "title": "Prescriptions",
+    "subtitle": "Manage your prescriptions",
+    "upload": {
+      "title": "Upload Prescription",
+      "subtitle": "Take a clear photo or scan of your prescription",
+      "button": "Upload Prescription",
+      "dragDrop": "Drag and drop prescription image here",
+      "supportedFormats": "Supported formats: JPG, PNG, PDF",
+      "maxSize": "Maximum file size: 10MB",
+      "guidelines": {
+        "title": "Photo Guidelines",
+        "clear": "Ensure the image is clear and readable",
+        "lighting": "Use good lighting",
+        "complete": "Include the complete prescription",
+        "legible": "Make sure all text is legible"
+      }
+    },
+    "details": {
+      "patientName": "Patient Name",
+      "doctorName": "Doctor Name",
+      "doctorLicense": "Doctor License",
+      "issueDate": "Issue Date",
+      "expiryDate": "Expiry Date",
+      "medications": "Prescribed Medications",
+      "dosageInstructions": "Dosage Instructions",
+      "duration": "Duration",
+      "frequency": "Frequency",
+      "notes": "Additional Notes",
+      "verificationStatus": "Verification Status"
+    },
+    "status": {
+      "pending": "Pending Verification",
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "fulfilled": "Fulfilled",
+      "expired": "Expired"
+    },
+    "verification": {
+      "pending": "Your prescription is being verified by our pharmacist",
+      "approved": "Prescription verified and approved",
+      "rejected": "Prescription rejected",
+      "rejectionReason": "Rejection Reason"
+    },
+    "actions": {
+      "viewPrescription": "View Prescription",
+      "orderMedications": "Order Medications",
+      "reupload": "Upload New Version",
+      "contactPharmacist": "Contact Pharmacist"
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "subtitle": "Track your medication orders",
+    "history": "Order History",
+    "current": "Current Orders",
+    "details": {
+      "orderNumber": "Order Number",
+      "orderDate": "Order Date",
+      "status": "Order Status",
+      "items": "Items",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "discount": "Discount",
+      "deliveryFee": "Delivery Fee",
+      "total": "Total",
+      "paymentMethod": "Payment Method",
+      "deliveryAddress": "Delivery Address",
+      "deliveryMethod": "Delivery Method",
+      "estimatedDelivery": "Estimated Delivery",
+      "actualDelivery": "Delivered On",
+      "trackingNumber": "Tracking Number",
+      "pharmacy": "Pharmacy"
+    },
+    "status": {
+      "pending": "Pending Confirmation",
+      "confirmed": "Confirmed",
+      "preparing": "Being Prepared",
+      "ready": "Ready for Pickup/Delivery",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "payment": {
+      "pending": "Payment Pending",
+      "completed": "Payment Completed",
+      "failed": "Payment Failed",
+      "refunded": "Refunded"
+    },
+    "delivery": {
+      "standard": "Standard Delivery (3-5 days)",
+      "express": "Express Delivery (1-2 days)",
+      "pickup": "Pharmacy Pickup",
+      "sameDay": "Same Day Delivery"
+    },
+    "actions": {
+      "viewOrder": "View Order",
+      "trackOrder": "Track Order",
+      "cancelOrder": "Cancel Order",
+      "reorder": "Reorder",
+      "downloadInvoice": "Download Invoice",
+      "contactSupport": "Contact Support"
+    },
+    "tracking": {
+      "title": "Order Tracking",
+      "orderPlaced": "Order Placed",
+      "orderConfirmed": "Order Confirmed",
+      "preparingOrder": "Preparing Your Order",
+      "orderReady": "Order Ready",
+      "orderShipped": "Order Shipped",
+      "outForDelivery": "Out for Delivery",
+      "orderDelivered": "Order Delivered"
+    }
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "emptySubtitle": "Add some medications to get started",
+    "continueShopping": "Continue Shopping",
+    "items": "Items in Cart",
+    "item": "{{count}} item",
+    "item_plural": "{{count}} items",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "total": "Total",
+    "checkout": "Proceed to Checkout",
+    "updateCart": "Update Cart",
+    "removeItem": "Remove Item",
+    "quantity": "Quantity",
+    "notes": "Special Instructions",
+    "prescriptionRequired": "Prescription required for this item",
+    "addPrescription": "Add Prescription"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "steps": {
+      "review": "Review Items",
+      "delivery": "Delivery Information",
+      "payment": "Payment",
+      "confirmation": "Confirmation"
+    },
+    "delivery": {
+      "title": "Delivery Information",
+      "address": "Delivery Address",
+      "method": "Delivery Method",
+      "addNewAddress": "Add New Address",
+      "useExistingAddress": "Use Existing Address",
+      "standardDelivery": "Standard Delivery",
+      "expressDelivery": "Express Delivery",
+      "pharmacyPickup": "Pharmacy Pickup",
+      "sameDayDelivery": "Same Day Delivery"
+    },
+    "payment": {
+      "title": "Payment Information",
+      "method": "Payment Method",
+      "creditCard": "Credit Card",
+      "debitCard": "Debit Card",
+      "paypal": "PayPal",
+      "bankTransfer": "Bank Transfer",
+      "cashOnDelivery": "Cash on Delivery",
+      "digitalWallet": "Digital Wallet",
+      "cardNumber": "Card Number",
+      "expiryDate": "Expiry Date",
+      "cvv": "CVV",
+      "cardholderName": "Cardholder Name"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "items": "Items",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "deliveryFee": "Delivery Fee",
+      "discount": "Discount",
+      "total": "Total Amount"
+    },
+    "placeOrder": "Place Order",
+    "processing": "Processing your order...",
+    "success": "Order placed successfully!",
+    "error": "Failed to place order. Please try again."
+  },
+  "pharmacies": {
+    "title": "Pharmacies",
+    "subtitle": "Find pharmacies near you",
+    "search": "Search by location",
+    "nearMe": "Near Me",
+    "details": {
+      "name": "Pharmacy Name",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "operatingHours": "Operating Hours",
+      "services": "Services",
+      "rating": "Rating",
+      "reviews": "Reviews",
+      "distance": "Distance"
+    },
+    "services": {
+      "prescriptionFilling": "Prescription Filling",
+      "medicationCounseling": "Medication Counseling",
+      "healthScreening": "Health Screening",
+      "vaccinations": "Vaccinations",
+      "delivery": "Home Delivery",
+      "consultation": "Consultation",
+      "compounding": "Compounding"
+    },
+    "hours": {
+      "open24": "Open 24 Hours",
+      "closed": "Closed",
+      "opensAt": "Opens at {{time}}",
+      "closesAt": "Closes at {{time}}",
+      "openNow": "Open Now"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "getDirections": "Get Directions",
+      "call": "Call",
+      "selectPharmacy": "Select This Pharmacy"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "medicalInfo": "Medical Information",
+    "addresses": "Addresses",
+    "paymentMethods": "Payment Methods",
+    "preferences": "Preferences",
+    "security": "Security",
+    "medicalHistory": "Medical History",
+    "allergies": "Allergies",
+    "currentMedications": "Current Medications",
+    "emergencyContact": "Emergency Contact",
+    "insuranceInfo": "Insurance Information",
+    "addAddress": "Add New Address",
+    "addPaymentMethod": "Add Payment Method",
+    "changePassword": "Change Password",
+    "twoFactorAuth": "Two-Factor Authentication",
+    "notifications": "Notification Preferences",
+    "privacy": "Privacy Settings"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark All as Read",
+    "empty": "No notifications",
+    "types": {
+      "orderUpdate": "Order Update",
+      "prescriptionVerified": "Prescription Verified",
+      "medicationReminder": "Medication Reminder",
+      "promotions": "Promotions",
+      "systemUpdate": "System Update"
+    }
+  },
+  "support": {
+    "title": "Help & Support",
+    "faq": "Frequently Asked Questions",
+    "contactUs": "Contact Us",
+    "liveChat": "Live Chat",
+    "phoneSupport": "Phone Support",
+    "emailSupport": "Email Support",
+    "feedback": "Send Feedback",
+    "reportIssue": "Report an Issue",
+    "categories": {
+      "orders": "Orders & Delivery",
+      "prescriptions": "Prescriptions",
+      "payments": "Payments & Billing",
+      "account": "Account & Profile",
+      "medications": "Medications",
+      "technical": "Technical Support",
+      "general": "General Questions"
+    }
+  },
+  "footer": {
+    "about": "About CureX40",
+    "services": "Our Services",
+    "support": "Customer Support",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "contactInfo": "Contact Information",
+    "socialMedia": "Follow Us",
+    "newsletter": "Newsletter",
+    "subscribeNewsletter": "Subscribe to our newsletter for health tips and updates"
+  }
+}
