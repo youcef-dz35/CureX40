@@ -21,7 +21,7 @@ import { cn } from '../../utils';
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  rememberMe: z.boolean().optional(),
+  remember: z.boolean().optional(),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -35,7 +35,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  const from = (location.state as any)?.from?.pathname || '/';
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
 
   const {
     register,
@@ -47,7 +47,7 @@ export default function LoginPage() {
     defaultValues: {
       email: '',
       password: '',
-      rememberMe: false,
+      remember: false,
     },
   });
 
@@ -58,7 +58,7 @@ export default function LoginPage() {
       const credentials: LoginCredentials = {
         email: data.email,
         password: data.password,
-        rememberMe: data.rememberMe,
+        remember: data.remember,
       };
 
       await login(credentials);
@@ -190,7 +190,7 @@ export default function LoginPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
-                  {...register('rememberMe')}
+                  {...register('remember')}
                   id="remember-me"
                   type="checkbox"
                   className="form-checkbox"

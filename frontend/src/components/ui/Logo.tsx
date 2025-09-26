@@ -8,12 +8,7 @@ interface LogoProps {
   variant?: 'full' | 'icon-only' | 'text-only';
 }
 
-const sizeClasses = {
-  sm: 'h-6',
-  md: 'h-8',
-  lg: 'h-12',
-  xl: 'h-16',
-};
+
 
 export default function Logo({
   className,

@@ -23,22 +23,22 @@ import { cn } from '../../utils';
 
 const registerSchema = z
   .object({
-    firstName: z.string().min(2, 'First name must be at least 2 characters'),
-    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+    first_name: z.string().min(2, 'First name must be at least 2 characters'),
+    last_name: z.string().min(2, 'Last name must be at least 2 characters'),
     email: z.string().email('Please enter a valid email address'),
     phone: z.string().optional(),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
       .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
-    confirmPassword: z.string(),
-    acceptTerms: z.boolean().refine((val) => val === true, {
+    password_confirmation: z.string(),
+    accept_terms: z.boolean().refine((val) => val === true, {
       message: 'You must accept the terms and conditions',
     }),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
+  .refine((data) => data.password === data.password_confirmation, {
+    message: "Passwords don't match",
+    path: ['password_confirmation'],
   });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -58,7 +58,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
-  const [passwordValue, setPasswordValue] = useState('');
+
 
   const {
     register,
@@ -69,13 +69,13 @@ export default function RegisterPage() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       phone: '',
       password: '',
-      confirmPassword: '',
-      acceptTerms: false,
+      password_confirmation: '',
+      accept_terms: false,
     },
   });
 
@@ -86,13 +86,12 @@ export default function RegisterPage() {
 
     try {
       const registerData: RegisterData = {
-        firstName: data.firstName,
-        lastName: data.lastName,
+        first_name: data.first_name,
+        last_name: data.last_name,
         email: data.email,
         password: data.password,
-        confirmPassword: data.confirmPassword,
-        phone: data.phone || undefined,
-        acceptTerms: data.acceptTerms,
+        password_confirmation: data.password_confirmation,
+        accept_terms: data.accept_terms,
       };
 
       await authRegister(registerData);
@@ -161,7 +160,7 @@ export default function RegisterPage() {
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div className="form-group">
-                <label htmlFor="firstName" className="form-label">
+                <label htmlFor="first_name" className="form-label">
                   {t('form.firstName')}
                 </label>
                 <div className="relative">
@@ -169,39 +168,39 @@ export default function RegisterPage() {
                     <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    {...register('firstName')}
+                    {...register('first_name')}
                     type="text"
-                    id="firstName"
+                    id="first_name"
                     className={cn(
                       'form-input pl-10',
-                      errors.firstName && 'border-error-500 focus:border-error-500 focus:ring-error-500'
+                      errors.first_name && 'border-error-500 focus:border-error-500 focus:ring-error-500'
                     )}
                     placeholder="John"
                     disabled={isSubmitting || isLoading}
                   />
                 </div>
-                {errors.firstName && (
-                  <p className="form-error">{errors.firstName.message}</p>
+                {errors.first_name && (
+                  <p className="form-error">{errors.first_name.message}</p>
                 )}
               </div>
 
               <div className="form-group">
-                <label htmlFor="lastName" className="form-label">
+                <label htmlFor="last_name" className="form-label">
                   {t('form.lastName')}
                 </label>
                 <input
-                  {...register('lastName')}
+                  {...register('last_name')}
                   type="text"
-                  id="lastName"
+                  id="last_name"
                   className={cn(
                     'form-input',
-                    errors.lastName && 'border-error-500 focus:border-error-500 focus:ring-error-500'
+                    errors.last_name && 'border-error-500 focus:border-error-500 focus:ring-error-500'
                   )}
                   placeholder="Doe"
                   disabled={isSubmitting || isLoading}
                 />
-                {errors.lastName && (
-                  <p className="form-error">{errors.lastName.message}</p>
+                {errors.last_name && (
+                  <p className="form-error">{errors.last_name.message}</p>
                 )}
               </div>
             </div>
@@ -330,7 +329,7 @@ export default function RegisterPage() {
 
             {/* Confirm Password Field */}
             <div className="form-group">
-              <label htmlFor="confirmPassword" className="form-label">
+              <label htmlFor="password_confirmation" className="form-label">
                 {t('form.confirmPassword')}
               </label>
               <div className="relative">
@@ -338,12 +337,12 @@ export default function RegisterPage() {
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  {...register('confirmPassword')}
+                  {...register('password_confirmation')}
                   type={showConfirmPassword ? 'text' : 'password'}
-                  id="confirmPassword"
+                  id="password_confirmation"
                   className={cn(
                     'form-input pl-10 pr-10',
-                    errors.confirmPassword && 'border-error-500 focus:border-error-500 focus:ring-error-500'
+                    errors.password_confirmation && 'border-error-500 focus:border-error-500 focus:ring-error-500'
                   )}
                   placeholder="Confirm your password"
                   disabled={isSubmitting || isLoading}
@@ -361,8 +360,8 @@ export default function RegisterPage() {
                   )}
                 </button>
               </div>
-              {errors.confirmPassword && (
-                <p className="form-error">{errors.confirmPassword.message}</p>
+              {errors.password_confirmation && (
+                <p className="form-error">{errors.password_confirmation.message}</p>
               )}
             </div>
 
@@ -370,12 +369,12 @@ export default function RegisterPage() {
             <div className="form-group">
               <div className="flex items-start">
                 <input
-                  {...register('acceptTerms')}
-                  id="acceptTerms"
+                  {...register('accept_terms')}
+                  id="accept-terms"
                   type="checkbox"
                   className={cn(
                     'form-checkbox mt-1',
-                    errors.acceptTerms && 'border-error-500'
+                    errors.accept_terms && 'border-error-500'
                   )}
                   disabled={isSubmitting || isLoading}
                 />
@@ -398,8 +397,8 @@ export default function RegisterPage() {
                   </Link>
                 </label>
               </div>
-              {errors.acceptTerms && (
-                <p className="form-error">{errors.acceptTerms.message}</p>
+              {errors.accept_terms && (
+                <p className="form-error mt-2">{errors.accept_terms.message}</p>
               )}
             </div>
 

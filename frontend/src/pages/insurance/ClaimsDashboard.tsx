@@ -59,9 +59,13 @@ export default function ClaimsDashboard() {
       patientId: 'patient-123',
       patient: {
         id: 'patient-123',
-        firstName: 'John',
-        lastName: 'Smith',
-        email: 'john.smith@email.com'
+        first_name: 'John',
+        last_name: 'Smith',
+        email: 'john.smith@email.com',
+        role: 'patient' as any,
+        is_active: true,
+        created_at: '2023-01-01T00:00:00Z',
+        updated_at: '2023-01-01T00:00:00Z'
       } as User,
       prescriptionId: 'rx-456',
       prescription: {} as any,
@@ -102,9 +106,13 @@ export default function ClaimsDashboard() {
       patientId: 'patient-456',
       patient: {
         id: 'patient-456',
-        firstName: 'Sarah',
-        lastName: 'Johnson',
-        email: 'sarah.johnson@email.com'
+        first_name: 'Sarah',
+        last_name: 'Johnson',
+        email: 'sarah.johnson@email.com',
+        role: 'patient' as any,
+        is_active: true,
+        created_at: '2023-01-01T00:00:00Z',
+        updated_at: '2023-01-01T00:00:00Z'
       } as User,
       prescriptionId: 'rx-789',
       prescription: {} as any,
@@ -145,9 +153,13 @@ export default function ClaimsDashboard() {
       patientId: 'patient-789',
       patient: {
         id: 'patient-789',
-        firstName: 'Michael',
-        lastName: 'Brown',
-        email: 'michael.brown@email.com'
+        first_name: 'Michael',
+        last_name: 'Brown',
+        email: 'michael.brown@email.com',
+        role: 'patient' as any,
+        is_active: true,
+        created_at: '2023-01-01T00:00:00Z',
+        updated_at: '2023-01-01T00:00:00Z'
       } as User,
       prescriptionId: 'rx-321',
       prescription: {} as any,
@@ -257,8 +269,8 @@ export default function ClaimsDashboard() {
   const filteredClaims = claims.filter(claim => {
     const matchesStatus = selectedStatus === 'all' || claim.status === selectedStatus;
     const matchesSearch = searchQuery === '' ||
-      claim.patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      claim.patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      claim.patient.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      claim.patient.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       claim.policyNumber.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
@@ -447,7 +459,7 @@ export default function ClaimsDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div>
                             <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              {claim.patient.firstName} {claim.patient.lastName}
+                              {claim.patient.first_name} {claim.patient.last_name}
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">
                               {claim.policyNumber}
@@ -568,7 +580,7 @@ export default function ClaimsDashboard() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div>
                               <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                {claim.patient.firstName} {claim.patient.lastName}
+                                {claim.patient.first_name} {claim.patient.last_name}
                               </div>
                               <div className="text-sm text-gray-500 dark:text-gray-400">
                                 {claim.policyNumber}

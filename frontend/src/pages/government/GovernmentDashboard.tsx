@@ -1,30 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Map,
   AlertTriangle,
   TrendingUp,
   TrendingDown,
-  Users,
   Building2,
   Package,
   Clock,
-  Shield,
   BarChart3,
-  PieChart,
   Activity,
   Globe,
-  Download,
-  Filter,
   RefreshCw,
-  Bell,
-  Settings,
-  Eye,
-  MapPin,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Zap
+  MapPin
 } from 'lucide-react';
 import {
   NationalHealthMetrics,
@@ -37,13 +25,13 @@ import {
 } from '../../types';
 
 export default function GovernmentDashboard() {
-  const { t } = useTranslation(['common', 'pharmacy']);
+
   const [activeTab, setActiveTab] = useState<'overview' | 'regions' | 'alerts' | 'reports'>('overview');
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+
 
   // Mock data - replace with actual API calls
-  const [nationalMetrics, setNationalMetrics] = useState<NationalHealthMetrics>({
+  const [nationalMetrics] = useState<NationalHealthMetrics>({
     totalPharmacies: 15420,
     activePharmacies: 14890,
     totalMedications: 45600,
@@ -56,7 +44,7 @@ export default function GovernmentDashboard() {
     lastUpdated: new Date().toISOString()
   });
 
-  const [regionData, setRegionData] = useState<RegionMetrics[]>([
+  const [regionData] = useState<RegionMetrics[]>([
     {
       regionId: 'algiers',
       regionName: 'Algiers',
@@ -97,7 +85,7 @@ export default function GovernmentDashboard() {
     }
   ]);
 
-  const [supplyAlerts, setSupplyAlerts] = useState<SupplyChainAlert[]>([
+  const [supplyAlerts] = useState<SupplyChainAlert[]>([
     {
       id: '1',
       type: AlertType.SHORTAGE,
@@ -121,7 +109,7 @@ export default function GovernmentDashboard() {
     }
   ]);
 
-  const handleRefresh = async () => {
+  const handleRefresh = async (): Promise<void> => {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
@@ -186,12 +174,12 @@ export default function GovernmentDashboard() {
         {/* Navigation Tabs */}
         <div className="mb-8">
           <nav className="flex space-x-8">
-            {[
+            {([
               { key: 'overview', label: 'National Overview', icon: Globe },
               { key: 'regions', label: 'Regional Analysis', icon: Map },
               { key: 'alerts', label: 'Supply Alerts', icon: AlertTriangle },
               { key: 'reports', label: 'Reports', icon: BarChart3 },
-            ].map(({ key, label, icon: Icon }) => (
+            ] as Array<{ key: string; label: string; icon: React.ComponentType<any> }>).map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
                 onClick={() => setActiveTab(key as any)}

@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { User, AuthResponse, LoginCredentials, RegisterData } from '../types';
+import { authService } from '../services/api/auth';
 import { storage } from '../utils';
 
 interface AuthContextType {
@@ -10,9 +11,11 @@ interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
   refreshToken: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<{ message: string }>;
+  resetPassword: (data: any) => Promise<{ message: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,54 +31,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const isAuthenticated = !!user && !!token;
 
-  const logout = useCallback(() => {
-    setUser(null);
-    setToken(null);
-    storage.remove('curex40-token');
-    storage.remove('curex40-user');
-    storage.remove('curex40-refresh-token');
-
-    // Call logout endpoint to invalidate token on server
-    if (token) {
-      fetch('/api/v1/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }).catch(error => {
-        console.error('Error during logout:', error);
-      });
+  const logout = useCallback(async (): Promise<void> => {
+    try {
+      // Call logout endpoint to invalidate token on server
+      if (token) {
+        await authService.logout();
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      // Clear local state and storage regardless of API response
+      setUser(null);
+      setToken(null);
+      storage.remove('curex40-token');
+      storage.remove('curex40-user');
+      storage.remove('curex40-refresh-token');
     }
   }, [token]);
 
-  // Initialize auth state from localStorage
+  // Handle auth logout event from interceptors
   useEffect(() => {
-    // Validate token and refresh user data
-    const validateAndRefreshAuth = async (authToken: string) => {
-      try {
-        const response = await fetch('/api/v1/auth/user', {
-          headers: {
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData.data);
-          storage.set('curex40-user', userData.data);
-        } else {
-          // Token is invalid, logout
-          logout();
-        }
-      } catch (error) {
-        console.error('Error validating auth:', error);
-        logout();
-      }
+    const handleAuthLogout = () => {
+      setUser(null);
+      setToken(null);
+      storage.remove('curex40-token');
+      storage.remove('curex40-user');
+      storage.remove('curex40-refresh-token');
     };
 
-    const initAuth = () => {
+    window.addEventListener('auth:logout', handleAuthLogout);
+    return () => window.removeEventListener('auth:logout', handleAuthLogout);
+  }, []);
+
+  // Initialize auth state from localStorage
+  useEffect(() => {
+    const initAuth = async () => {
       try {
         const savedToken = storage.get<string>('curex40-token', '');
         const savedUser = storage.get<User | null>('curex40-user', null);
@@ -83,13 +73,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (savedToken && savedUser) {
           setToken(savedToken);
           setUser(savedUser);
+
           // Validate token and refresh user data
-          validateAndRefreshAuth(savedToken);
+          try {
+            const userData = await authService.getCurrentUser();
+            setUser(userData);
+            storage.set('curex40-user', userData);
+          } catch (error) {
+            console.error('Error validating auth:', error);
+            // Token is invalid, logout
+            await logout();
+          }
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
         // Clear invalid data
-        logout();
+        await logout();
       } finally {
         setIsLoading(false);
       }
@@ -103,24 +102,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const refreshTokenValue = storage.get<string>('curex40-refresh-token', '');
 
       if (!refreshTokenValue) {
-        logout();
+        await logout();
         return;
       }
 
-      const response = await fetch('/api/v1/auth/refresh', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refreshToken: refreshTokenValue }),
-      });
-
-      if (!response.ok) {
-        logout();
-        return;
-      }
-
-      const data: AuthResponse = await response.json();
+      const data: AuthResponse = await authService.refreshToken();
 
       // Update tokens
       setToken(data.token);
@@ -144,27 +130,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error) {
       console.error('Token refresh error:', error);
-      logout();
+      await logout();
     }
   }, [logout]);
 
   const login = async (credentials: LoginCredentials): Promise<void> => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
-      }
-
-      const data: AuthResponse = await response.json();
+      const data: AuthResponse = await authService.login(credentials);
 
       // Store auth data
       setUser(data.user);
@@ -194,20 +167,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const register = async (data: RegisterData): Promise<void> => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/v1/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Registration failed');
-      }
-
-      const authData: AuthResponse = await response.json();
+      const authData: AuthResponse = await authService.register(data);
 
       // Auto-login after successful registration
       setUser(authData.user);
@@ -218,6 +178,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (authData.refreshToken) {
         storage.set('curex40-refresh-token', authData.refreshToken);
       }
+
+      // Set up token expiration handling
+      if (authData.expiresIn) {
+        setTimeout(() => {
+          refreshToken();
+        }, (authData.expiresIn - 60) * 1000);
+      }
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -225,8 +192,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsLoading(false);
     }
   };
-
-
 
   const updateUser = (userData: Partial<User>) => {
     if (user) {
@@ -236,16 +201,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  // Set up axios interceptor for token refresh on 401 responses
-  useEffect(() => {
-    if (token) {
-      // Note: This is a simplified interceptor setup
-      // In a real app, you'd set this up with your HTTP client (axios, etc.)
-      return () => {
-        // Cleanup interceptor
-      };
+  const forgotPassword = async (email: string): Promise<{ message: string }> => {
+    try {
+      return await authService.forgotPassword(email);
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      throw error;
     }
-  }, [token, refreshToken]);
+  };
+
+  const resetPassword = async (data: any): Promise<{ message: string }> => {
+    try {
+      return await authService.resetPassword(data);
+    } catch (error) {
+      console.error('Reset password error:', error);
+      throw error;
+    }
+  };
 
   const value: AuthContextType = {
     user,
@@ -257,6 +229,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     logout,
     updateUser,
     refreshToken,
+    forgotPassword,
+    resetPassword,
   };
 
   return (

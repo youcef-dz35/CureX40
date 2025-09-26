@@ -13,6 +13,7 @@ import ErrorBoundary from "./components/ui/ErrorBoundary";
 
 // Import pages (we'll create these next)
 import HomePage from "./pages/HomePage";
+import LandingPage from "./pages/LandingPage";
 import MedicationsPage from "./pages/MedicationsPage";
 import PrescriptionsPage from "./pages/PrescriptionsPage";
 import OrdersPage from "./pages/OrdersPage";
@@ -21,6 +22,11 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
+
+// Import test components (commented out for production)
+// import ApiTest from "./components/test/ApiTest";
+// import ConnectionTest from "./components/test/ConnectionTest";
+// import TestHomePage from "./pages/TestHomePage";
 
 // Role-based pages
 import PharmacyDashboard from "./pages/pharmacy/PharmacyDashboard";
@@ -56,6 +62,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+
 
 // Protected Route component for role-based access
 function ProtectedRoute({
@@ -93,43 +101,67 @@ function ProtectedRoute({
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public routes */}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/medications" element={<MedicationsPage />} />
+      {/* Standalone routes (no main header/footer) */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/landing" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+
+      {/* Public routes with main layout */}
+      <Route path="/home" element={
+        <AppLayout>
+          <HomePage />
+        </AppLayout>
+      } />
+      <Route path="/medications" element={
+        <AppLayout>
+          <MedicationsPage />
+        </AppLayout>
+      } />
+
+      {/* Test routes (commented out for production) */}
+      {/* <Route path="/test-api" element={<ApiTest />} />
+      <Route path="/test-connection" element={<ConnectionTest />} /> */}
 
       {/* Patient routes */}
       <Route
         path="/prescriptions"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
-            <PrescriptionsPage />
-          </ProtectedRoute>
+          <AppLayout>
+            <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
+              <PrescriptionsPage />
+            </ProtectedRoute>
+          </AppLayout>
         }
       />
       <Route
         path="/orders"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
-            <OrdersPage />
-          </ProtectedRoute>
+          <AppLayout>
+            <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
+              <OrdersPage />
+            </ProtectedRoute>
+          </AppLayout>
         }
       />
       <Route
         path="/cart"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
-            <CartPage />
-          </ProtectedRoute>
+          <AppLayout>
+            <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
+              <CartPage />
+            </ProtectedRoute>
+          </AppLayout>
         }
       />
       <Route
         path="/digital-vault"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
-            <DigitalVault />
-          </ProtectedRoute>
+          <AppLayout>
+            <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
+              <DigitalVault />
+            </ProtectedRoute>
+          </AppLayout>
         }
       />
 
@@ -137,9 +169,11 @@ function AppRoutes() {
       <Route
         path="/pharmacy-dashboard"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.PHARMACIST, UserRole.ADMIN]}>
-            <PharmacyDashboard />
-          </ProtectedRoute>
+          <AppLayout>
+            <ProtectedRoute allowedRoles={[UserRole.PHARMACIST, UserRole.ADMIN]}>
+              <PharmacyDashboard />
+            </ProtectedRoute>
+          </AppLayout>
         }
       />
 
@@ -147,9 +181,11 @@ function AppRoutes() {
       <Route
         path="/government-dashboard"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.GOVERNMENT_OFFICIAL, UserRole.ADMIN]}>
-            <GovernmentDashboard />
-          </ProtectedRoute>
+          <AppLayout>
+            <ProtectedRoute allowedRoles={[UserRole.GOVERNMENT_OFFICIAL, UserRole.ADMIN]}>
+              <GovernmentDashboard />
+            </ProtectedRoute>
+          </AppLayout>
         }
       />
 
@@ -157,9 +193,11 @@ function AppRoutes() {
       <Route
         path="/insurance-dashboard"
         element={
-          <ProtectedRoute allowedRoles={[UserRole.INSURANCE_PROVIDER, UserRole.ADMIN]}>
-            <ClaimsDashboard />
-          </ProtectedRoute>
+          <AppLayout>
+            <ProtectedRoute allowedRoles={[UserRole.INSURANCE_PROVIDER, UserRole.ADMIN]}>
+              <ClaimsDashboard />
+            </ProtectedRoute>
+          </AppLayout>
         }
       />
 
@@ -167,14 +205,20 @@ function AppRoutes() {
       <Route
         path="/profile"
         element={
-          <ProtectedRoute>
-            <ProfilePage />
-          </ProtectedRoute>
+          <AppLayout>
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          </AppLayout>
         }
       />
 
       {/* 404 page */}
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path="*" element={
+        <AppLayout>
+          <NotFoundPage />
+        </AppLayout>
+      } />
     </Routes>
   );
 }
@@ -190,9 +234,7 @@ function App() {
           <Router>
             <div className="App" dir={i18n.dir()}>
               <Suspense fallback={<AppLoading />}>
-                <AppLayout>
-                  <AppRoutes />
-                </AppLayout>
+                <AppRoutes />
               </Suspense>
             </div>
           </Router>

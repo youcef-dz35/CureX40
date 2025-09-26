@@ -2,15 +2,16 @@
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   phone?: string;
   role: UserRole;
   avatar?: string;
-  isEmailVerified: boolean;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  email_verified_at?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  last_login_at?: string;
 }
 
 export enum UserRole {
@@ -25,17 +26,16 @@ export enum UserRole {
 export interface LoginCredentials {
   email: string;
   password: string;
-  rememberMe?: boolean;
+  remember?: boolean;
 }
 
 export interface RegisterData {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
-  confirmPassword: string;
-  phone?: string;
-  acceptTerms: boolean;
+  password_confirmation: string;
+  accept_terms?: boolean;
 }
 
 export interface AuthResponse {
@@ -321,7 +321,7 @@ export interface SearchFilters {
 }
 
 // Notification types
-export interface Notification {
+export interface AppNotification {
   id: string;
   userId: string;
   title: string;
