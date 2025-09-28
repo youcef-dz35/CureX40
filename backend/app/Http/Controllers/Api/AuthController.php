@@ -50,13 +50,18 @@ class AuthController extends Controller
 
         $token = $user->createToken("api")->plainTextToken;
 
+        // Get user with role information
+        $userWithRole = $user->load('roles');
+        $userData = $userWithRole->toArray();
+        $userData['role'] = $userWithRole->roles->first()?->name ?? 'patient';
+
         return response()->json(
             [
                 "success" => true,
                 "status" => 201,
                 "message" => "User registered successfully",
                 "data" => [
-                    "user" => $user,
+                    "user" => $userData,
                     "token" => $token,
                     "token_type" => "Bearer",
                     "expires_in" => config("sanctum.expiration") * 60 ?? null,
@@ -119,12 +124,17 @@ class AuthController extends Controller
             $user->update(["last_login_at" => now()]);
         }
 
+        // Get user with role information
+        $userWithRole = $user->load('roles');
+        $userData = $userWithRole->toArray();
+        $userData['role'] = $userWithRole->roles->first()?->name ?? 'patient'; // Default to patient if no role
+
         return response()->json([
             "success" => true,
             "status" => 200,
             "message" => "Login successful",
             "data" => [
-                "user" => $user,
+                "user" => $userData,
                 "token" => $token,
                 "token_type" => "Bearer",
                 "expires_in" => config("sanctum.expiration") * 60 ?? null,
@@ -157,11 +167,16 @@ class AuthController extends Controller
      */
     public function user(Request $request): JsonResponse
     {
+        $user = $request->user();
+        $userWithRole = $user->load('roles');
+        $userData = $userWithRole->toArray();
+        $userData['role'] = $userWithRole->roles->first()?->name ?? 'patient'; // Default to patient if no role
+
         return response()->json([
             "success" => true,
             "status" => 200,
             "message" => "User retrieved successfully",
-            "data" => $request->user(),
+            "data" => $userData,
         ]);
     }
 

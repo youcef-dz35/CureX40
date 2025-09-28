@@ -11,7 +11,7 @@ export interface PrescriptionApiService {
   getPrescriptionMedications(prescriptionId: string): Promise<PrescriptionMedication[]>;
   refillPrescription(id: string): Promise<Prescription>;
   transferPrescription(id: string, newPharmacyId: string): Promise<void>;
-  getPrescriptionHistory(patientId?: string): Promise<Prescription[]>;
+  getPrescriptionHistory(params?: PrescriptionQueryParams): Promise<Prescription[]>;
   validatePrescription(prescriptionData: ValidatePrescriptionData): Promise<ValidationResult>;
 }
 
@@ -24,6 +24,7 @@ export interface PrescriptionQueryParams {
   pharmacy_id?: string;
   from_date?: string;
   to_date?: string;
+  search?: string;
   verification_status?: VerificationStatus;
   sort_by?: 'created_at' | 'expiry_date' | 'patient_name';
   sort_order?: 'asc' | 'desc';
@@ -212,10 +213,9 @@ class PrescriptionService implements PrescriptionApiService {
   /**
    * Get prescription history for patient
    */
-  async getPrescriptionHistory(patientId?: string): Promise<Prescription[]> {
+  async getPrescriptionHistory(params?: PrescriptionQueryParams): Promise<Prescription[]> {
     try {
-      const params = patientId ? { patient_id: patientId } : {};
-      const queryString = buildQueryParams(params);
+      const queryString = params ? buildQueryParams(params) : '';
       const url = queryString ? `/prescriptions/history?${queryString}` : '/prescriptions/history';
 
       const response = await apiClient.get<ApiResponse<Prescription[]>>(url);

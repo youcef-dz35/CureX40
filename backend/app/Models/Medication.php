@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
-use Laravel\Scout\Searchable;
+// use Laravel\Scout\Searchable; // Temporarily disabled
 
 class Medication extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity, Searchable;
+    use HasFactory, SoftDeletes, LogsActivity; // Searchable temporarily disabled
 
     /**
      * The attributes that are mass assignable.
@@ -19,68 +19,68 @@ class Medication extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'generic_name',
-        'brand',
-        'description',
-        'dosage',
-        'form',
-        'category',
-        'active_ingredients',
-        'contraindications',
-        'side_effects',
-        'price',
-        'currency',
-        'stock',
-        'min_stock',
-        'max_stock',
-        'requires_prescription',
-        'images',
-        'manufacturer',
-        'manufacturer_contact',
-        'expiry_date',
-        'batch_number',
-        'barcode',
-        'ndc_number',
-        'rxcui',
-        'storage_conditions',
-        'storage_temperature_min',
-        'storage_temperature_max',
-        'storage_humidity_max',
-        'therapeutic_class',
-        'drug_class',
-        'controlled_substance_schedule',
-        'pregnancy_category',
-        'lactation_safety',
-        'pediatric_dosing',
-        'geriatric_considerations',
-        'renal_dosing_adjustment',
-        'hepatic_dosing_adjustment',
-        'drug_interactions',
-        'food_interactions',
-        'monitoring_parameters',
-        'administration_route',
-        'onset_of_action',
-        'duration_of_action',
-        'half_life',
-        'metabolism',
-        'excretion',
-        'bioavailability',
-        'protein_binding',
-        'molecular_weight',
-        'molecular_formula',
-        'approval_date',
-        'black_box_warning',
-        'special_populations',
-        'is_active',
-        'is_available',
-        'is_otc',
-        'requires_refrigeration',
-        'requires_freezing',
-        'light_sensitive',
-        'moisture_sensitive',
-        'created_by',
-        'updated_by'
+        "name",
+        "generic_name",
+        "brand",
+        "description",
+        "dosage",
+        "form",
+        "category",
+        "active_ingredients",
+        "contraindications",
+        "side_effects",
+        "price",
+        "currency",
+        "stock",
+        "min_stock",
+        "max_stock",
+        "requires_prescription",
+        "images",
+        "manufacturer",
+        "manufacturer_contact",
+        "expiry_date",
+        "batch_number",
+        "barcode",
+        "ndc_number",
+        "rxcui",
+        "storage_conditions",
+        "storage_temperature_min",
+        "storage_temperature_max",
+        "storage_humidity_max",
+        "therapeutic_class",
+        "drug_class",
+        "controlled_substance_schedule",
+        "pregnancy_category",
+        "lactation_safety",
+        "pediatric_dosing",
+        "geriatric_considerations",
+        "renal_dosing_adjustment",
+        "hepatic_dosing_adjustment",
+        "drug_interactions",
+        "food_interactions",
+        "monitoring_parameters",
+        "administration_route",
+        "onset_of_action",
+        "duration_of_action",
+        "half_life",
+        "metabolism",
+        "excretion",
+        "bioavailability",
+        "protein_binding",
+        "molecular_weight",
+        "molecular_formula",
+        "approval_date",
+        "black_box_warning",
+        "special_populations",
+        "is_active",
+        "is_available",
+        "is_otc",
+        "requires_refrigeration",
+        "requires_freezing",
+        "light_sensitive",
+        "moisture_sensitive",
+        "created_by",
+        "updated_by",
     ];
 
     /**
@@ -89,87 +89,87 @@ class Medication extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'active_ingredients' => 'array',
-        'contraindications' => 'array',
-        'side_effects' => 'array',
-        'images' => 'array',
-        'drug_interactions' => 'array',
-        'food_interactions' => 'array',
-        'monitoring_parameters' => 'array',
-        'special_populations' => 'array',
-        'expiry_date' => 'date',
-        'approval_date' => 'date',
-        'price' => 'decimal:2',
-        'storage_temperature_min' => 'decimal:1',
-        'storage_temperature_max' => 'decimal:1',
-        'storage_humidity_max' => 'decimal:1',
-        'molecular_weight' => 'decimal:3',
-        'bioavailability' => 'decimal:2',
-        'protein_binding' => 'decimal:2',
-        'requires_prescription' => 'boolean',
-        'is_active' => 'boolean',
-        'is_available' => 'boolean',
-        'is_otc' => 'boolean',
-        'requires_refrigeration' => 'boolean',
-        'requires_freezing' => 'boolean',
-        'light_sensitive' => 'boolean',
-        'moisture_sensitive' => 'boolean',
+        "active_ingredients" => "array",
+        "contraindications" => "array",
+        "side_effects" => "array",
+        "images" => "array",
+        "drug_interactions" => "array",
+        "food_interactions" => "array",
+        "monitoring_parameters" => "array",
+        "special_populations" => "array",
+        "expiry_date" => "date",
+        "approval_date" => "date",
+        "price" => "decimal:2",
+        "storage_temperature_min" => "decimal:1",
+        "storage_temperature_max" => "decimal:1",
+        "storage_humidity_max" => "decimal:1",
+        "molecular_weight" => "decimal:3",
+        "bioavailability" => "decimal:2",
+        "protein_binding" => "decimal:2",
+        "requires_prescription" => "boolean",
+        "is_active" => "boolean",
+        "is_available" => "boolean",
+        "is_otc" => "boolean",
+        "requires_refrigeration" => "boolean",
+        "requires_freezing" => "boolean",
+        "light_sensitive" => "boolean",
+        "moisture_sensitive" => "boolean",
     ];
 
     /**
      * Medication forms
      */
     public const FORMS = [
-        'tablet' => 'Tablet',
-        'capsule' => 'Capsule',
-        'liquid' => 'Liquid',
-        'injection' => 'Injection',
-        'cream' => 'Cream',
-        'ointment' => 'Ointment',
-        'drops' => 'Drops',
-        'inhaler' => 'Inhaler',
-        'patch' => 'Patch',
-        'suppository' => 'Suppository',
-        'gel' => 'Gel',
-        'lotion' => 'Lotion',
-        'spray' => 'Spray',
-        'powder' => 'Powder'
+        "tablet" => "Tablet",
+        "capsule" => "Capsule",
+        "liquid" => "Liquid",
+        "injection" => "Injection",
+        "cream" => "Cream",
+        "ointment" => "Ointment",
+        "drops" => "Drops",
+        "inhaler" => "Inhaler",
+        "patch" => "Patch",
+        "suppository" => "Suppository",
+        "gel" => "Gel",
+        "lotion" => "Lotion",
+        "spray" => "Spray",
+        "powder" => "Powder",
     ];
 
     /**
      * Medication categories
      */
     public const CATEGORIES = [
-        'analgesics' => 'Analgesics',
-        'antibiotics' => 'Antibiotics',
-        'antihistamines' => 'Antihistamines',
-        'antacids' => 'Antacids',
-        'vitamins' => 'Vitamins & Supplements',
-        'cardiovascular' => 'Cardiovascular',
-        'respiratory' => 'Respiratory',
-        'dermatological' => 'Dermatological',
-        'gastrointestinal' => 'Gastrointestinal',
-        'neurological' => 'Neurological',
-        'hormonal' => 'Hormonal',
-        'other' => 'Other'
+        "analgesics" => "Analgesics",
+        "antibiotics" => "Antibiotics",
+        "antihistamines" => "Antihistamines",
+        "antacids" => "Antacids",
+        "vitamins" => "Vitamins & Supplements",
+        "cardiovascular" => "Cardiovascular",
+        "respiratory" => "Respiratory",
+        "dermatological" => "Dermatological",
+        "gastrointestinal" => "Gastrointestinal",
+        "neurological" => "Neurological",
+        "hormonal" => "Hormonal",
+        "other" => "Other",
     ];
 
     /**
      * Administration routes
      */
     public const ROUTES = [
-        'oral' => 'Oral',
-        'intravenous' => 'Intravenous',
-        'intramuscular' => 'Intramuscular',
-        'subcutaneous' => 'Subcutaneous',
-        'topical' => 'Topical',
-        'inhalation' => 'Inhalation',
-        'rectal' => 'Rectal',
-        'vaginal' => 'Vaginal',
-        'ophthalmic' => 'Ophthalmic',
-        'otic' => 'Otic',
-        'nasal' => 'Nasal',
-        'transdermal' => 'Transdermal'
+        "oral" => "Oral",
+        "intravenous" => "Intravenous",
+        "intramuscular" => "Intramuscular",
+        "subcutaneous" => "Subcutaneous",
+        "topical" => "Topical",
+        "inhalation" => "Inhalation",
+        "rectal" => "Rectal",
+        "vaginal" => "Vaginal",
+        "ophthalmic" => "Ophthalmic",
+        "otic" => "Otic",
+        "nasal" => "Nasal",
+        "transdermal" => "Transdermal",
     ];
 
     /**
@@ -179,8 +179,13 @@ class Medication extends Model
     {
         return LogOptions::defaults()
             ->logOnly([
-                'name', 'generic_name', 'brand', 'price',
-                'stock', 'is_active', 'is_available'
+                "name",
+                "generic_name",
+                "brand",
+                "price",
+                "stock",
+                "is_active",
+                "is_available",
             ])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
@@ -192,15 +197,15 @@ class Medication extends Model
     public function toSearchableArray(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'generic_name' => $this->generic_name,
-            'brand' => $this->brand,
-            'description' => $this->description,
-            'category' => $this->category,
-            'form' => $this->form,
-            'active_ingredients' => $this->active_ingredients,
-            'manufacturer' => $this->manufacturer,
+            "id" => $this->id,
+            "name" => $this->name,
+            "generic_name" => $this->generic_name,
+            "brand" => $this->brand,
+            "description" => $this->description,
+            "category" => $this->category,
+            "form" => $this->form,
+            "active_ingredients" => $this->active_ingredients,
+            "manufacturer" => $this->manufacturer,
         ];
     }
 
@@ -209,7 +214,7 @@ class Medication extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'id';
+        return "id";
     }
 
     /**
@@ -217,7 +222,7 @@ class Medication extends Model
      */
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, "created_by");
     }
 
     /**
@@ -225,7 +230,7 @@ class Medication extends Model
      */
     public function updater()
     {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->belongsTo(User::class, "updated_by");
     }
 
     /**
@@ -265,7 +270,10 @@ class Medication extends Model
      */
     public function originalRecommendations()
     {
-        return $this->hasMany(MolecularRecommendation::class, 'original_medication_id');
+        return $this->hasMany(
+            MolecularRecommendation::class,
+            "original_medication_id",
+        );
     }
 
     /**
@@ -273,7 +281,10 @@ class Medication extends Model
      */
     public function recommendedAlternatives()
     {
-        return $this->hasMany(MolecularRecommendation::class, 'recommended_medication_id');
+        return $this->hasMany(
+            MolecularRecommendation::class,
+            "recommended_medication_id",
+        );
     }
 
     /**
@@ -289,8 +300,10 @@ class Medication extends Model
      */
     public function drugInteractions()
     {
-        return $this->hasMany(DrugInteraction::class, 'medication_a_id')
-            ->orWhere('medication_b_id', $this->id);
+        return $this->hasMany(
+            DrugInteraction::class,
+            "medication_a_id",
+        )->orWhere("medication_b_id", $this->id);
     }
 
     /**
@@ -298,7 +311,7 @@ class Medication extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where("is_active", true);
     }
 
     /**
@@ -306,8 +319,7 @@ class Medication extends Model
      */
     public function scopeAvailable($query)
     {
-        return $query->where('is_available', true)
-                     ->where('stock', '>', 0);
+        return $query->where("is_available", true)->where("stock", ">", 0);
     }
 
     /**
@@ -315,7 +327,7 @@ class Medication extends Model
      */
     public function scopeRequiresPrescription($query)
     {
-        return $query->where('requires_prescription', true);
+        return $query->where("requires_prescription", true);
     }
 
     /**
@@ -323,7 +335,7 @@ class Medication extends Model
      */
     public function scopeOtc($query)
     {
-        return $query->where('is_otc', true);
+        return $query->where("is_otc", true);
     }
 
     /**
@@ -331,7 +343,7 @@ class Medication extends Model
      */
     public function scopeLowStock($query)
     {
-        return $query->whereRaw('stock <= min_stock');
+        return $query->whereRaw("stock <= min_stock");
     }
 
     /**
@@ -339,7 +351,7 @@ class Medication extends Model
      */
     public function scopeExpiringWithin($query, int $days = 30)
     {
-        return $query->where('expiry_date', '<=', now()->addDays($days));
+        return $query->where("expiry_date", "<=", now()->addDays($days));
     }
 
     /**
@@ -347,7 +359,7 @@ class Medication extends Model
      */
     public function scopeByCategory($query, string $category)
     {
-        return $query->where('category', $category);
+        return $query->where("category", $category);
     }
 
     /**
@@ -355,7 +367,7 @@ class Medication extends Model
      */
     public function scopeByForm($query, string $form)
     {
-        return $query->where('form', $form);
+        return $query->where("form", $form);
     }
 
     /**
@@ -388,8 +400,8 @@ class Medication extends Model
     public function getTotalAvailableStock(): int
     {
         return $this->pharmacyInventories()
-            ->where('is_active', true)
-            ->sum('stock');
+            ->where("is_active", true)
+            ->sum("stock");
     }
 
     /**
@@ -409,7 +421,9 @@ class Medication extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return number_format($this->price, 2) . ' ' . ($this->currency ?? 'USD');
+        return number_format($this->price, 2) .
+            " " .
+            ($this->currency ?? "USD");
     }
 
     /**
@@ -418,11 +432,11 @@ class Medication extends Model
     public function getStockStatusAttribute(): string
     {
         if ($this->stock <= 0) {
-            return 'out_of_stock';
+            return "out_of_stock";
         } elseif ($this->isLowStock()) {
-            return 'low_stock';
+            return "low_stock";
         } else {
-            return 'in_stock';
+            return "in_stock";
         }
     }
 
@@ -444,8 +458,8 @@ class Medication extends Model
     public function requiresSpecialStorage(): bool
     {
         return $this->requires_refrigeration ||
-               $this->requires_freezing ||
-               $this->light_sensitive ||
-               $this->moisture_sensitive;
+            $this->requires_freezing ||
+            $this->light_sensitive ||
+            $this->moisture_sensitive;
     }
 }

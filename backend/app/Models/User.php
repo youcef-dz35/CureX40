@@ -301,4 +301,20 @@ class User extends Authenticatable implements MustVerifyEmail
             'last_activity_at' => now(),
         ]);
     }
+
+    /**
+     * Get the user's cart.
+     */
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
+
+    /**
+     * Get the user's favorite medications.
+     */
+    public function favoriteMedications()
+    {
+        return $this->hasMany(Favorite::class);
+    }
 }

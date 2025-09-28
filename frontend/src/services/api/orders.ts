@@ -9,7 +9,7 @@ export interface OrderApiService {
   cancelOrder(id: string, reason?: string): Promise<void>;
   getOrderItems(orderId: string): Promise<OrderItem[]>;
   trackOrder(id: string): Promise<OrderTracking>;
-  getOrderHistory(userId?: string): Promise<Order[]>;
+  getOrderHistory(params?: OrderQueryParams): Promise<Order[]>;
   processPayment(orderId: string, paymentData: PaymentData): Promise<PaymentResult>;
   requestRefund(orderId: string, reason: string): Promise<RefundResult>;
 }
@@ -22,6 +22,7 @@ export interface OrderQueryParams {
   pharmacy_id?: string;
   from_date?: string;
   to_date?: string;
+  search?: string;
   sort_by?: 'created_at' | 'total_amount' | 'status';
   sort_order?: 'asc' | 'desc';
 }
@@ -181,10 +182,9 @@ class OrderService implements OrderApiService {
   /**
    * Get order history for user
    */
-  async getOrderHistory(userId?: string): Promise<Order[]> {
+  async getOrderHistory(params?: OrderQueryParams): Promise<Order[]> {
     try {
-      const params = userId ? { user_id: userId } : {};
-      const queryString = buildQueryParams(params);
+      const queryString = params ? buildQueryParams(params) : '';
       const url = queryString ? `/orders/history?${queryString}` : '/orders/history';
 
       const response = await apiClient.get<ApiResponse<Order[]>>(url);

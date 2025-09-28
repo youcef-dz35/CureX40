@@ -513,6 +513,98 @@ Route::prefix("v1")->group(function () {
             });
         });
 
+    // Inventory Routes
+    Route::prefix("inventory")->group(function () {
+        Route::get("/transactions", [
+            \App\Http\Controllers\Api\InventoryController::class,
+            "transactions",
+        ]);
+        Route::get("/summary", [
+            \App\Http\Controllers\Api\InventoryController::class,
+            "summary",
+        ]);
+        Route::get("/low-stock", [
+            \App\Http\Controllers\Api\InventoryController::class,
+            "lowStock",
+        ]);
+        Route::post("/add-stock", [
+            \App\Http\Controllers\Api\InventoryController::class,
+            "addStock",
+        ]);
+        Route::post("/adjust-stock", [
+            \App\Http\Controllers\Api\InventoryController::class,
+            "adjustStock",
+        ]);
+        Route::get("/reports", [
+            \App\Http\Controllers\Api\InventoryController::class,
+            "reports",
+        ]);
+    });
+
+    // Dashboard Routes
+    Route::middleware("auth:sanctum")->prefix("dashboard")->group(function () {
+        Route::get("/", [
+            \App\Http\Controllers\Api\DashboardController::class,
+            "index",
+        ]);
+        Route::get("/analytics", [
+            \App\Http\Controllers\Api\DashboardController::class,
+            "analytics",
+        ]);
+    });
+
+    // Favorites Routes
+    Route::middleware("auth:sanctum")->prefix("favorites")->group(function () {
+        Route::get("/", [
+            \App\Http\Controllers\Api\FavoritesController::class,
+            "index",
+        ]);
+        Route::post("/", [
+            \App\Http\Controllers\Api\FavoritesController::class,
+            "store",
+        ]);
+        Route::delete("/{medicationId}", [
+            \App\Http\Controllers\Api\FavoritesController::class,
+            "destroy",
+        ]);
+        Route::get("/check/{medicationId}", [
+            \App\Http\Controllers\Api\FavoritesController::class,
+            "check",
+        ]);
+        Route::get("/summary", [
+            \App\Http\Controllers\Api\FavoritesController::class,
+            "summary",
+        ]);
+    });
+
+    // Cart Routes
+    Route::middleware("auth:sanctum")->prefix("cart")->group(function () {
+        Route::get("/", [
+            \App\Http\Controllers\Api\CartController::class,
+            "index",
+        ]);
+        Route::post("/items", [
+            \App\Http\Controllers\Api\CartController::class,
+            "addItem",
+        ]);
+        Route::put("/items/{itemId}", [
+            \App\Http\Controllers\Api\CartController::class,
+            "updateItem",
+        ]);
+        Route::delete("/items/{itemId}", [
+            \App\Http\Controllers\Api\CartController::class,
+            "removeItem",
+        ]);
+        Route::delete("/", [
+            \App\Http\Controllers\Api\CartController::class,
+            "clear",
+        ]);
+        Route::get("/summary", [
+            \App\Http\Controllers\Api\CartController::class,
+            "summary",
+        ]);
+    });
+
     // Permission check endpoint
     Route::middleware("auth:sanctum")->post("auth/check-permission", function (
         Request $request,

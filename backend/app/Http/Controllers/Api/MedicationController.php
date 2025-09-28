@@ -36,10 +36,21 @@ class MedicationController extends Controller
             }
 
             if ($search = $request->query("search")) {
-                $query->where(function ($q) use ($search) {
-                    $q->where("name", "like", "%{$search}%")
-                        ->orWhere("generic_name", "like", "%{$search}%")
-                        ->orWhere("brand", "like", "%{$search}%");
+                $searchTerms = explode(' ', trim($search));
+                $query->where(function ($q) use ($searchTerms) {
+                    foreach ($searchTerms as $term) {
+                        if (strlen($term) > 0) {
+                            $q->where(function ($subQuery) use ($term) {
+                                $subQuery->whereRaw("LOWER(name) LIKE LOWER(?)", ["%{$term}%"])
+                                    ->orWhereRaw("LOWER(generic_name) LIKE LOWER(?)", ["%{$term}%"])
+                                    ->orWhereRaw("LOWER(brand) LIKE LOWER(?)", ["%{$term}%"])
+                                    ->orWhereRaw("LOWER(description) LIKE LOWER(?)", ["%{$term}%"])
+                                    ->orWhereRaw("LOWER(category) LIKE LOWER(?)", ["%{$term}%"])
+                                    ->orWhereRaw("LOWER(dosage) LIKE LOWER(?)", ["%{$term}%"])
+                                    ->orWhereRaw("LOWER(form) LIKE LOWER(?)", ["%{$term}%"]);
+                            });
+                        }
+                    }
                 });
             }
 
@@ -467,7 +478,6 @@ class MedicationController extends Controller
                     $search = $query["search"];
                     $q->where("name", "like", "%{$search}%")
                         ->orWhere("generic_name", "like", "%{$search}%")
-                        ->orWhere("brand_name", "like", "%{$search}%")
                         ->orWhere("brand", "like", "%{$search}%")
                         ->orWhere("active_ingredients", "like", "%{$search}%");
                 });
