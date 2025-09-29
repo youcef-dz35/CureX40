@@ -553,6 +553,34 @@ Route::prefix("v1")->group(function () {
         ]);
     });
 
+    // Health Records Routes
+    Route::middleware("auth:sanctum")->prefix("health-records")->group(function () {
+        Route::get("/", [
+            \App\Http\Controllers\Api\HealthRecordController::class,
+            "index",
+        ]);
+        Route::post("/", [
+            \App\Http\Controllers\Api\HealthRecordController::class,
+            "store",
+        ]);
+        Route::get("/{id}", [
+            \App\Http\Controllers\Api\HealthRecordController::class,
+            "show",
+        ]);
+        Route::put("/{id}", [
+            \App\Http\Controllers\Api\HealthRecordController::class,
+            "update",
+        ]);
+        Route::delete("/{id}", [
+            \App\Http\Controllers\Api\HealthRecordController::class,
+            "destroy",
+        ]);
+        Route::get("/{id}/download", [
+            \App\Http\Controllers\Api\HealthRecordController::class,
+            "download",
+        ]);
+    });
+
     // Favorites Routes
     Route::middleware("auth:sanctum")->prefix("favorites")->group(function () {
         Route::get("/", [

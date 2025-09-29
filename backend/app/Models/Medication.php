@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use App\Models\InventoryTransaction;
 // use Laravel\Scout\Searchable; // Temporarily disabled
 
 class Medication extends Model
@@ -238,7 +239,7 @@ class Medication extends Model
      */
     public function pharmacyInventories()
     {
-        return $this->hasMany(PharmacyInventory::class);
+        return $this->hasMany(InventoryTransaction::class);
     }
 
     /**

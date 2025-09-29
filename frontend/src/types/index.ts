@@ -4,6 +4,7 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
+  name?: string; // Computed field for backward compatibility
   phone?: string;
   role: UserRole;
   avatar?: string;
@@ -12,6 +13,10 @@ export interface User {
   created_at: string;
   updated_at: string;
   last_login_at?: string;
+  // Additional fields that may be present in API responses
+  address?: string;
+  date_of_birth?: string;
+  gender?: string;
 }
 
 export enum UserRole {
@@ -49,27 +54,47 @@ export interface AuthResponse {
 export interface Medication {
   id: string;
   name: string;
-  genericName?: string;
-  brand: string;
-  description: string;
-  dosage: string;
-  form: MedicationForm;
-  category: MedicationCategory;
-  activeIngredients: string[];
+  generic_name?: string;
+  genericName?: string; // For backward compatibility
+  brand?: string;
+  brand_name?: string; // API field
+  description?: string;
+  dosage?: string;
+  strength?: string; // API field
+  form: string; // Changed from enum to string to match API
+  category: string; // Changed from enum to string to match API
+  active_ingredients?: string[];
+  activeIngredients?: string[]; // For backward compatibility
   contraindications?: string[];
-  sideEffects?: string[];
+  side_effects?: string[];
+  sideEffects?: string[]; // For backward compatibility
   price: number;
   currency: string;
   stock: number;
-  minStock: number;
-  requiresPrescription: boolean;
-  images: string[];
-  manufacturer: string;
-  expiryDate: string;
-  batchNumber: string;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  min_stock?: number;
+  minStock?: number; // For backward compatibility
+  max_stock?: number;
+  requires_prescription: boolean;
+  requiresPrescription?: boolean; // For backward compatibility
+  images?: string[];
+  image_url?: string; // API field
+  manufacturer?: string;
+  expiry_date?: string;
+  expiryDate?: string; // For backward compatibility
+  batch_number?: string;
+  batchNumber?: string; // For backward compatibility
+  is_active: boolean;
+  isActive?: boolean; // For backward compatibility
+  is_available?: boolean;
+  isAvailable?: boolean; // For backward compatibility
+  created_at: string;
+  createdAt?: string; // For backward compatibility
+  updated_at: string;
+  updatedAt?: string; // For backward compatibility
+  // Additional API fields
+  rating?: number;
+  dosage_form?: string;
+  dosageForm?: string; // For backward compatibility
 }
 
 export enum MedicationForm {
@@ -106,20 +131,28 @@ export interface Prescription {
   patientId: string;
   patient: User;
   doctorName: string;
+  doctor_name?: string; // API field
   doctorLicense: string;
   medications: PrescriptionMedication[];
   notes?: string;
   issueDate: string;
+  issue_date?: string; // API field
   expiryDate: string;
-  status: PrescriptionStatus;
+  expiry_date?: string; // API field
+  status: string; // Changed from enum to string to match API
   verificationStatus: VerificationStatus;
   pharmacistId?: string;
   pharmacist?: User;
   verifiedAt?: string;
   rejectionReason?: string;
   images: string[];
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  createdAt?: string; // For backward compatibility
+  updated_at: string;
+  updatedAt?: string; // For backward compatibility
+  prescription_number?: string; // API field
+  prescribed_date?: string; // API field
+  items_count?: number; // API field
 }
 
 export interface PrescriptionMedication {
@@ -135,7 +168,9 @@ export enum PrescriptionStatus {
   PENDING = 'pending',
   VERIFIED = 'verified',
   FULFILLED = 'fulfilled',
+  FILLED = 'filled', // Added missing status
   REJECTED = 'rejected',
+  CANCELLED = 'cancelled', // Added missing status
   EXPIRED = 'expired',
 }
 
@@ -151,27 +186,35 @@ export interface Order {
   patientId: string;
   patient: User;
   items: OrderItem[];
+  orderItems?: OrderItem[]; // API field
   prescriptionId?: string;
   prescription?: Prescription;
   subtotal: number;
   tax: number;
   discount: number;
   total: number;
+  total_amount?: number; // API field
   currency: string;
-  status: OrderStatus;
+  status: string; // Changed from enum to string to match API
   paymentStatus: PaymentStatus;
   paymentMethod?: PaymentMethod;
   deliveryAddress: Address;
+  delivery_address?: Address; // API field
   deliveryMethod: DeliveryMethod;
   deliveryFee: number;
   estimatedDelivery: string;
   actualDelivery?: string;
   pharmacyId: string;
   pharmacy: Pharmacy;
+  pharmacy_name?: string; // API field
   notes?: string;
   trackingNumber?: string;
-  createdAt: string;
-  updatedAt: string;
+  order_number?: string; // API field
+  created_at: string;
+  createdAt?: string; // For backward compatibility
+  updated_at: string;
+  updatedAt?: string; // For backward compatibility
+  delivery_phone?: string; // API field
 }
 
 export interface OrderItem {
@@ -180,8 +223,12 @@ export interface OrderItem {
   medication: Medication;
   quantity: number;
   unitPrice: number;
+  unit_price?: number; // API field
   totalPrice: number;
+  total_price?: number; // API field
   notes?: string;
+  medication_name?: string; // API field
+  medication_brand?: string; // API field
 }
 
 export enum OrderStatus {

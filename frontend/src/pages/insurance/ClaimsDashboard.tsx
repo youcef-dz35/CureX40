@@ -31,6 +31,7 @@ import {
   DocumentType,
   User
 } from '../../types';
+import { dashboardService, DashboardData } from '../../services/dashboardService';
 
 export default function ClaimsDashboard() {
   const { t } = useTranslation(['common', 'pharmacy']);
@@ -39,19 +40,49 @@ export default function ClaimsDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Mock data - replace with actual API calls
-  const [dashboardMetrics, setDashboardMetrics] = useState({
-    totalClaims: 15420,
-    pendingClaims: 892,
-    approvedClaims: 13180,
-    rejectedClaims: 1348,
-    totalClaimValue: 2847560,
-    averageClaimValue: 184.5,
-    processingTime: 2.3,
-    fraudDetectionRate: 12.4,
-    approvalRate: 85.4,
-    monthlyChange: 8.2
-  });
+  // Real API data
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load dashboard data
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await dashboardService.getInsuranceDashboard();
+      setDashboardData(data);
+    } catch (err: any) {
+      setError('Failed to load dashboard data');
+      console.error('Error loading dashboard:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadDashboardData();
+    setRefreshing(false);
+  };
+
+  // Transform API data to match the expected format
+  const dashboardMetrics = {
+    totalClaims: dashboardData?.stats?.total_claims || 0,
+    pendingClaims: dashboardData?.stats?.pending_claims || 0,
+    approvedClaims: dashboardData?.stats?.approved_claims || 0,
+    rejectedClaims: dashboardData?.stats?.rejected_claims || 0,
+    totalClaimValue: dashboardData?.stats?.total_claim_value || 0,
+    averageClaimValue: dashboardData?.stats?.average_claim_value || 0,
+    processingTime: dashboardData?.stats?.processing_time || 0,
+    fraudDetectionRate: dashboardData?.stats?.fraud_detection_rate || 0,
+    approvalRate: dashboardData?.stats?.approval_rate || 0,
+    monthlyChange: dashboardData?.stats?.monthly_change || 0
+  };
 
   const [claims, setClaims] = useState<InsuranceClaim[]>([
     {
@@ -210,13 +241,7 @@ export default function ClaimsDashboard() {
     }
   ]);
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    // Simulate API call
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1000);
-  };
+  // handleRefresh is now defined above
 
   const getStatusColor = (status: ClaimStatus) => {
     switch (status) {
@@ -274,6 +299,34 @@ export default function ClaimsDashboard() {
       claim.policyNumber.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-curex-blue-500" />
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-8 w-8 mx-auto text-red-500" />
+          <p className="mt-2 text-red-600 dark:text-red-400">{error}</p>
+          <button
+            onClick={loadDashboardData}
+            className="mt-4 px-4 py-2 bg-curex-blue-500 text-white rounded-md hover:bg-curex-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

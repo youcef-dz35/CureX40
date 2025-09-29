@@ -60,11 +60,28 @@ export default function PrescriptionsPage() {
     }
   }, [statusFilter, handleSearch]);
 
+  const loadPrescriptions = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await prescriptionService.getPrescriptions({
+        search: searchTerm || undefined,
+        status: statusFilter !== 'all' ? statusFilter : undefined
+      });
+      setPrescriptions(response.data || []);
+    } catch (err: any) {
+      setError('Failed to load prescriptions');
+      console.error('Error loading prescriptions:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, statusFilter]);
+
   const clearSearch = () => {
     setSearchTerm('');
   };
 
-  const getStatusColor = (status: PrescriptionStatus) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
@@ -81,7 +98,7 @@ export default function PrescriptionsPage() {
     }
   };
 
-  const getStatusIcon = (status: PrescriptionStatus) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
         return <Clock className="h-4 w-4" />;
@@ -230,11 +247,11 @@ export default function PrescriptionsPage() {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Calendar className="h-4 w-4" />
-                        <span>{formatDate(prescription.prescribed_date)}</span>
+                        <span>{formatDate(prescription.prescribed_date || prescription.issueDate || prescription.issue_date || '')}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Clock className="h-4 w-4" />
-                        <span>Expires: {formatDate(prescription.expiry_date)}</span>
+                        <span>Expires: {formatDate(prescription.expiry_date || prescription.expiryDate || '')}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Pill className="h-4 w-4" />
@@ -321,13 +338,13 @@ export default function PrescriptionsPage() {
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Issue Date
                         </label>
-                        <p className="text-gray-900 dark:text-white">{formatDate(selectedPrescription.prescribed_date)}</p>
+                        <p className="text-gray-900 dark:text-white">{formatDate(selectedPrescription.prescribed_date || selectedPrescription.issueDate || selectedPrescription.issue_date || '')}</p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Expiry Date
                         </label>
-                        <p className="text-gray-900 dark:text-white">{formatDate(selectedPrescription.expiry_date)}</p>
+                        <p className="text-gray-900 dark:text-white">{formatDate(selectedPrescription.expiry_date || selectedPrescription.expiryDate || '')}</p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -339,10 +356,10 @@ export default function PrescriptionsPage() {
                   </div>
 
                   {/* Medications */}
-                  {selectedPrescription.items_count > 0 && (
+                  {(selectedPrescription.items_count || 0) > 0 && (
                     <div>
                       <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
-                        Medications ({selectedPrescription.items_count})
+                        Medications ({selectedPrescription.items_count || 0})
                       </h3>
                       <div className="text-center py-8">
                         <Pill className="h-12 w-12 text-gray-400 mx-auto mb-4" />

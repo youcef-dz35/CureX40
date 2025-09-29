@@ -40,7 +40,7 @@ export default function MedicationsPage() {
         page: 1,
         per_page: 50,
         search: debouncedSearchTerm || undefined,
-        category: categoryFilter !== 'all' ? categoryFilter : undefined
+        category: categoryFilter !== 'all' ? categoryFilter as any : undefined
       });
       setMedications(response.data);
     } catch (err: any) {

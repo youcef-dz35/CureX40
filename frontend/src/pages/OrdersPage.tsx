@@ -44,7 +44,7 @@ export default function OrdersPage() {
       
       const response = await orderService.getOrderHistory({
         search: debouncedSearchTerm || undefined,
-        status: statusFilter !== 'all' ? statusFilter : undefined
+        status: statusFilter !== 'all' ? statusFilter as any : undefined
       });
       setOrders(response);
     } catch (err: any) {
@@ -246,7 +246,7 @@ export default function OrdersPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Spent</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {formatCurrency(orders.reduce((sum, order) => sum + order.total_amount, 0))}
+                  {formatCurrency(orders.reduce((sum, order) => sum + (order.total_amount || order.total || 0), 0))}
                 </p>
               </div>
             </div>
@@ -351,7 +351,8 @@ export default function OrdersPage() {
                     </div>
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <MapPin className="h-4 w-4 mr-2" />
-                      {order.delivery_address}
+                      {typeof order.delivery_address === 'string' ? order.delivery_address : 
+                       order.delivery_address ? `${order.delivery_address.street}, ${order.delivery_address.city}` : 'N/A'}
                     </div>
                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                       <Phone className="h-4 w-4 mr-2" />
@@ -361,7 +362,7 @@ export default function OrdersPage() {
 
                   <div className="flex items-center justify-between">
                     <div className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {formatCurrency(order.total_amount)}
+                      {formatCurrency(order.total_amount || order.total || 0)}
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       {order.items?.length || order.orderItems?.length || 0} item{(order.items?.length || order.orderItems?.length || 0) !== 1 ? 's' : ''}
@@ -412,10 +413,10 @@ export default function OrdersPage() {
                           </div>
                           <div className="text-right">
                             <p className="font-medium text-gray-900 dark:text-white">
-                              {formatCurrency(item.total_price)}
+                              {formatCurrency(item.total_price || item.totalPrice || 0)}
                             </p>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {formatCurrency(item.unit_price)} each
+                              {formatCurrency(item.unit_price || item.unitPrice || 0)} each
                             </p>
                           </div>
                         </div>
@@ -429,7 +430,8 @@ export default function OrdersPage() {
                     <div className="space-y-2">
                       <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                         <MapPin className="h-4 w-4 mr-2" />
-                        {selectedOrder.delivery_address}
+                        {typeof selectedOrder.delivery_address === 'string' ? selectedOrder.delivery_address : 
+                         selectedOrder.delivery_address ? `${selectedOrder.delivery_address.street}, ${selectedOrder.delivery_address.city}` : 'N/A'}
                       </div>
                       <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                         <Phone className="h-4 w-4 mr-2" />
@@ -448,7 +450,7 @@ export default function OrdersPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-semibold text-gray-900 dark:text-white">Total</span>
                       <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {formatCurrency(selectedOrder.total_amount)}
+                        {formatCurrency(selectedOrder.total_amount || selectedOrder.total || 0)}
                       </span>
                     </div>
                   </div>

@@ -44,223 +44,241 @@ import {
   VaultAccessType
 } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { dashboardService, DashboardData } from '../../services/dashboardService';
+import { healthRecordService, CreateHealthRecordData } from '../../services/healthRecordService';
 
 export default function DigitalVault() {
   const { t } = useTranslation(['common', 'pharmacy']);
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'records' | 'medications' | 'allergies' | 'conditions' | 'vitals' | 'permissions'>('overview');
   const [isVaultLocked, setIsVaultLocked] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<HealthRecord | null>(null);
-
-  // Mock vault data - replace with actual API calls
-  const [vaultData, setVaultData] = useState<HealthVault>({
-    id: 'vault-1',
-    patientId: user?.id || '',
-    vitallsIntegrationId: 'vitalls-123456',
-    healthRecords: [
-      {
-        id: '1',
-        type: RecordType.LAB_RESULT,
-        title: 'Complete Blood Count',
-        description: 'Routine blood work showing normal ranges',
-        fileUrl: '/api/files/cbc-report.pdf',
-        metadata: {
-          testType: 'CBC',
-          laboratory: 'Central Lab',
-          results: {
-            hemoglobin: '14.2 g/dL',
-            whiteBloodCells: '7,200/μL',
-            platelets: '280,000/μL'
-          }
-        },
-        providerId: 'doc-123',
-        providerName: 'Dr. Sarah Johnson',
-        recordDate: '2024-01-15T10:00:00Z',
-        createdAt: '2024-01-15T10:30:00Z'
-      },
-      {
-        id: '2',
-        type: RecordType.IMAGING,
-        title: 'Chest X-Ray',
-        description: 'Clear chest X-ray, no abnormalities detected',
-        fileUrl: '/api/files/chest-xray.dcm',
-        metadata: {
-          imagingType: 'X-Ray',
-          bodyPart: 'Chest',
-          findings: 'Normal'
-        },
-        providerId: 'doc-456',
-        providerName: 'Dr. Michael Chen',
-        recordDate: '2024-01-10T14:30:00Z',
-        createdAt: '2024-01-10T15:00:00Z'
-      },
-      {
-        id: '3',
-        type: RecordType.VACCINATION,
-        title: 'COVID-19 Vaccination',
-        description: 'mRNA vaccine - 2nd dose',
-        metadata: {
-          vaccineType: 'mRNA',
-          manufacturer: 'Pfizer-BioNTech',
-          lotNumber: 'FL7533',
-          doseNumber: 2
-        },
-        providerId: 'clinic-789',
-        providerName: 'City Health Clinic',
-        recordDate: '2024-01-05T09:00:00Z',
-        createdAt: '2024-01-05T09:15:00Z'
-      }
-    ],
-    medications: [
-      {
-        medicationId: 'med-1',
-        medication: {
-          id: 'med-1',
-          name: 'Lisinopril 10mg',
-          genericName: 'Lisinopril',
-          brand: 'Prinivil'
-        } as any,
-        prescribedDate: '2024-01-01T00:00:00Z',
-        startDate: '2024-01-01T00:00:00Z',
-        dosage: '10mg',
-        frequency: 'Once daily',
-        prescriberId: 'doc-123',
-        prescriberName: 'Dr. Sarah Johnson',
-        status: MedicationStatus.ACTIVE,
-        adherence: 95,
-        sideEffectsReported: []
-      },
-      {
-        medicationId: 'med-2',
-        medication: {
-          id: 'med-2',
-          name: 'Metformin 500mg',
-          genericName: 'Metformin',
-          brand: 'Glucophage'
-        } as any,
-        prescribedDate: '2023-12-15T00:00:00Z',
-        startDate: '2023-12-15T00:00:00Z',
-        endDate: '2024-01-20T00:00:00Z',
-        dosage: '500mg',
-        frequency: 'Twice daily',
-        prescriberId: 'doc-456',
-        prescriberName: 'Dr. Michael Chen',
-        status: MedicationStatus.COMPLETED,
-        adherence: 88,
-        sideEffectsReported: ['Mild nausea']
-      }
-    ],
-    allergies: [
-      {
-        id: '1',
-        allergen: 'Penicillin',
-        severity: AllergySeverity.SEVERE,
-        symptoms: ['Rash', 'Difficulty breathing', 'Swelling'],
-        diagnosedDate: '2020-03-15T00:00:00Z',
-        notes: 'Discovered during treatment for strep throat'
-      },
-      {
-        id: '2',
-        allergen: 'Shellfish',
-        severity: AllergySeverity.MODERATE,
-        symptoms: ['Hives', 'Itching', 'Digestive upset'],
-        diagnosedDate: '2018-07-20T00:00:00Z',
-        notes: 'Reaction occurred after eating shrimp'
-      }
-    ],
-    chronicConditions: [
-      {
-        id: '1',
-        condition: 'Hypertension',
-        diagnosedDate: '2022-06-10T00:00:00Z',
-        status: ConditionStatus.ACTIVE,
-        medications: ['Lisinopril'],
-        managementPlan: 'Regular blood pressure monitoring, low sodium diet, exercise',
-        lastReview: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '2',
-        condition: 'Type 2 Diabetes',
-        diagnosedDate: '2023-08-15T00:00:00Z',
-        status: ConditionStatus.MONITORING,
-        medications: ['Metformin'],
-        managementPlan: 'Blood glucose monitoring, dietary modifications, regular exercise',
-        lastReview: '2024-01-15T00:00:00Z'
-      }
-    ],
-    vitalSigns: [
-      {
-        id: '1',
-        type: VitalType.BLOOD_PRESSURE,
-        value: 128,
-        unit: 'mmHg (systolic)',
-        recordedDate: '2024-01-20T08:00:00Z',
-        recordedBy: 'Self-monitored',
-        notes: 'Taken in morning before medication'
-      },
-      {
-        id: '2',
-        type: VitalType.WEIGHT,
-        value: 175,
-        unit: 'lbs',
-        recordedDate: '2024-01-20T07:30:00Z',
-        recordedBy: 'Self-monitored'
-      },
-      {
-        id: '3',
-        type: VitalType.BLOOD_GLUCOSE,
-        value: 95,
-        unit: 'mg/dL',
-        recordedDate: '2024-01-20T09:15:00Z',
-        recordedBy: 'Self-monitored',
-        notes: 'Fasting glucose'
-      }
-    ],
-    accessPermissions: [
-      {
-        id: '1',
-        grantedTo: 'Dr. Sarah Johnson',
-        grantedToType: PermissionGranteeType.HEALTHCARE_PROVIDER,
-        permissions: [VaultAccessType.READ, VaultAccessType.WRITE],
-        grantedAt: '2024-01-01T00:00:00Z',
-        expiresAt: '2024-12-31T23:59:59Z'
-      },
-      {
-        id: '2',
-        grantedTo: 'City Pharmacy',
-        grantedToType: PermissionGranteeType.PHARMACY,
-        permissions: [VaultAccessType.READ],
-        grantedAt: '2024-01-01T00:00:00Z',
-        expiresAt: '2024-06-30T23:59:59Z'
-      }
-    ],
-    encryptionKey: 'encrypted-key-hash',
-    lastSync: '2024-01-20T10:30:00Z',
-    createdAt: '2023-01-01T00:00:00Z',
-    updatedAt: '2024-01-20T10:30:00Z'
+  const [formData, setFormData] = useState<CreateHealthRecordData>({
+    type: 'prescription',
+    title: '',
+    description: '',
+    provider_name: '',
+    record_date: new Date().toISOString().split('T')[0]
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Real API data
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [healthRecords, setHealthRecords] = useState<any[]>([]);
+  const [vaultLoading, setVaultLoading] = useState(true);
+  const [vaultError, setVaultError] = useState<string | null>(null);
+
+  // Load dashboard data
   useEffect(() => {
-    loadVaultData();
+    loadDashboardData();
   }, []);
 
-  const loadVaultData = async () => {
+  const loadDashboardData = async () => {
     try {
-      setLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    } catch (error) {
-      console.error('Error loading vault data:', error);
+      setVaultLoading(true);
+      setVaultError(null);
+      console.log('Loading dashboard data...');
+      
+      // Load both dashboard data and health records
+      const [dashboardData, healthRecordsData] = await Promise.all([
+        dashboardService.getPatientDashboard(),
+        healthRecordService.getHealthRecords()
+      ]);
+      
+      console.log('Dashboard data loaded:', dashboardData);
+      console.log('Health records loaded:', healthRecordsData);
+      
+      setDashboardData(dashboardData);
+      
+      // Handle different possible response structures
+      let recordsData = [];
+      if (healthRecordsData && healthRecordsData.data) {
+        if (Array.isArray(healthRecordsData.data)) {
+          recordsData = healthRecordsData.data;
+        } else if (healthRecordsData.data.data && Array.isArray(healthRecordsData.data.data)) {
+          recordsData = healthRecordsData.data.data;
+        }
+      } else if (Array.isArray(healthRecordsData)) {
+        recordsData = healthRecordsData;
+      }
+      
+      console.log('Processed health records:', recordsData);
+      setHealthRecords(recordsData);
+    } catch (err: any) {
+      setVaultError('Failed to load vault data');
+      console.error('Error loading vault:', err);
     } finally {
-      setLoading(false);
+      setVaultLoading(false);
     }
   };
+
+  // Real vault data from API
+  const [vaultData, setVaultData] = useState<HealthVault | null>(null);
+
+  // Transform dashboard data into vault format when dashboard data is loaded
+  useEffect(() => {
+    if (dashboardData) {
+      console.log('Dashboard data received:', dashboardData);
+      console.log('Recent prescriptions:', dashboardData.recent_prescriptions);
+      console.log('Health records:', healthRecords);
+      console.log('Health records type:', typeof healthRecords, 'Is array:', Array.isArray(healthRecords));
+      
+      // Combine prescription-based records and user-created health records
+      const prescriptionRecords = dashboardData.recent_prescriptions?.flatMap((prescription, prescriptionIndex) => 
+        prescription.items?.map((item, itemIndex) => ({
+          id: `${prescription.id}-${item.id}` || `prescription-${prescriptionIndex}-${itemIndex}`,
+          type: RecordType.PRESCRIPTION,
+          title: `Prescription - ${item.medication?.name || item.medication_name || 'Unknown Medication'}`,
+          description: `Prescription for ${item.medication?.name || item.medication_name || 'medication'}`,
+          fileUrl: prescription.prescription_file || undefined,
+          metadata: {
+            prescriptionId: prescription.id,
+            medicationName: item.medication?.name || item.medication_name,
+            dosage: item.dosage_instructions || 'Unknown',
+            frequency: item.frequency || 'Unknown'
+          },
+          providerId: prescription.doctor_id || 'unknown',
+          providerName: prescription.doctor_name || 'Unknown Doctor',
+          recordDate: prescription.prescribed_date || prescription.issueDate || prescription.issue_date || new Date().toISOString(),
+          createdAt: prescription.created_at || new Date().toISOString()
+        })) || []
+      ) || [];
+
+      // Convert health records to vault format
+      const userHealthRecords = (Array.isArray(healthRecords) ? healthRecords : []).map((record, index) => ({
+        id: record.id || `health-record-${index}`,
+        type: record.type === 'prescription' ? RecordType.PRESCRIPTION :
+              record.type === 'lab_result' ? RecordType.LAB_RESULT :
+              record.type === 'imaging' ? RecordType.IMAGING :
+              record.type === 'consultation' ? RecordType.CONSULTATION :
+              record.type === 'vaccination' ? RecordType.VACCINATION :
+              RecordType.PRESCRIPTION, // Default fallback
+        title: record.title,
+        description: record.description || '',
+        fileUrl: record.file_path || undefined,
+        metadata: record.metadata || {},
+        providerId: record.provider_id || 'unknown',
+        providerName: record.provider_name || 'Unknown Provider',
+        recordDate: record.record_date || new Date().toISOString(),
+        createdAt: record.created_at || new Date().toISOString()
+      }));
+
+      const transformedVaultData: HealthVault = {
+        id: 'vault-1',
+        patientId: user?.id || '',
+        vitallsIntegrationId: 'vitalls-123456',
+        healthRecords: [...prescriptionRecords, ...userHealthRecords],
+        medications: dashboardData.recent_prescriptions?.flatMap((prescription, prescriptionIndex) => 
+          prescription.items?.map((item, itemIndex) => ({
+            medicationId: item.medication?.id || `med-${prescriptionIndex}-${itemIndex}`,
+            medication: item.medication || {
+              id: item.medication?.id || `med-${prescriptionIndex}-${itemIndex}`,
+              name: item.medication?.name || item.medication_name || 'Unknown Medication',
+              genericName: item.medication?.generic_name || item.medication?.genericName,
+              brand: item.medication?.brand || item.medication?.brand_name
+            } as any,
+            prescribedDate: prescription.prescribed_date || prescription.issueDate || prescription.issue_date || new Date().toISOString(),
+            startDate: prescription.prescribed_date || prescription.issueDate || prescription.issue_date || new Date().toISOString(),
+            dosage: item.dosage_instructions || 'Unknown',
+            frequency: item.frequency || 'Unknown',
+            prescriberId: prescription.doctor_id || 'unknown',
+            prescriberName: prescription.doctor_name || 'Unknown Doctor',
+            status: prescription.status === 'active' ? MedicationStatus.ACTIVE : 
+                    prescription.status === 'completed' ? MedicationStatus.COMPLETED :
+                    prescription.status === 'discontinued' ? MedicationStatus.DISCONTINUED : MedicationStatus.ACTIVE,
+            adherence: 95, // Default value
+            sideEffectsReported: []
+          })) || []
+        ) || [],
+        allergies: [], // No allergies data in current API
+        chronicConditions: [], // No conditions data in current API
+        vitalSigns: [], // No vitals data in current API
+        accessPermissions: [], // No permissions data in current API
+        encryptionKey: 'encrypted-key-hash',
+        lastSync: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      console.log('Transformed vault data:', transformedVaultData);
+      console.log('Health records count:', transformedVaultData.healthRecords.length);
+      console.log('Medications count:', transformedVaultData.medications.length);
+      
+      setVaultData(transformedVaultData);
+    }
+  }, [dashboardData, healthRecords, user?.id]);
 
   const handleUnlockVault = () => {
     // In real implementation, this would trigger biometric authentication
     setIsVaultLocked(false);
+  };
+
+  const handleShareVault = () => {
+    // In real implementation, this would open a share modal or generate a shareable link
+    if (navigator.share) {
+      navigator.share({
+        title: 'My Digital Health Vault',
+        text: 'Check out my health records in CureX40 Digital Vault',
+        url: window.location.href
+      }).catch(console.error);
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Vault link copied to clipboard!');
+      }).catch(() => {
+        alert('Unable to copy link. Please copy manually: ' + window.location.href);
+      });
+    }
+  };
+
+  const handleAddRecord = async () => {
+    try {
+      setIsSubmitting(true);
+      
+      const recordData: CreateHealthRecordData = {
+        ...formData,
+        file: selectedFile || undefined
+      };
+
+      await healthRecordService.createHealthRecord(recordData);
+      
+      // Reset form
+      setFormData({
+        type: 'prescription',
+        title: '',
+        description: '',
+        provider_name: '',
+        record_date: new Date().toISOString().split('T')[0]
+      });
+      setSelectedFile(null);
+      setShowAddModal(false);
+      
+      // Reload dashboard data to show new record
+      await loadDashboardData();
+      
+      alert('Health record added successfully!');
+    } catch (error: any) {
+      console.error('Error adding health record:', error);
+      alert('Failed to add health record. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setSelectedFile(file);
   };
 
   const getRecordIcon = (type: RecordType) => {
@@ -342,7 +360,7 @@ export default function DigitalVault() {
     }
   };
 
-  if (loading) {
+  if (vaultLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
@@ -391,6 +409,51 @@ export default function DigitalVault() {
     );
   }
 
+  if (vaultLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-curex-blue-500" />
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Loading vault...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!vaultData) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-8 w-8 mx-auto text-red-500" />
+          <p className="mt-2 text-red-600 dark:text-red-400">Failed to load vault data</p>
+          <button
+            onClick={loadDashboardData}
+            className="mt-4 px-4 py-2 bg-curex-blue-500 text-white rounded-md hover:bg-curex-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (vaultError) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-8 w-8 mx-auto text-red-500" />
+          <p className="mt-2 text-red-600 dark:text-red-400">{vaultError}</p>
+          <button
+            onClick={loadDashboardData}
+            className="mt-4 px-4 py-2 bg-curex-blue-500 text-white rounded-md hover:bg-curex-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
@@ -404,7 +467,7 @@ export default function DigitalVault() {
                   Digital Health Vault
                 </h1>
               </div>
-              {vaultData.vitallsIntegrationId && (
+              {vaultData?.vitallsIntegrationId && (
                 <div className="flex items-center space-x-1 text-sm text-green-600 dark:text-green-400">
                   <CheckCircle className="h-4 w-4" />
                   <span>Vitalls Connected</span>
@@ -414,13 +477,19 @@ export default function DigitalVault() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
                 <Clock className="h-4 w-4" />
-                <span>Last sync: {new Date(vaultData.lastSync).toLocaleTimeString()}</span>
+                <span>Last sync: {vaultData ? new Date(vaultData.lastSync).toLocaleTimeString() : 'Never'}</span>
               </div>
-              <button className="flex items-center space-x-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+              <button 
+                onClick={handleShareVault}
+                className="flex items-center space-x-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+              >
                 <Share2 className="h-4 w-4" />
                 <span>Share</span>
               </button>
-              <button className="flex items-center space-x-2 rounded-lg bg-curex-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-curex-teal-700">
+              <button 
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center space-x-2 rounded-lg bg-curex-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-curex-teal-700"
+              >
                 <Plus className="h-4 w-4" />
                 <span>Add Record</span>
               </button>
@@ -475,7 +544,7 @@ export default function DigitalVault() {
                           Health Records
                         </dt>
                         <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                          {vaultData.healthRecords.length}
+                          {vaultData?.healthRecords.length || 0}
                         </dd>
                       </dl>
                     </div>
@@ -495,7 +564,7 @@ export default function DigitalVault() {
                           Active Medications
                         </dt>
                         <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                          {vaultData.medications.filter(m => m.status === MedicationStatus.ACTIVE).length}
+                          {vaultData?.medications.filter(m => m.status === MedicationStatus.ACTIVE).length || 0}
                         </dd>
                       </dl>
                     </div>
@@ -515,7 +584,7 @@ export default function DigitalVault() {
                           Allergies
                         </dt>
                         <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                          {vaultData.allergies.length}
+                          {vaultData?.allergies.length || 0}
                         </dd>
                       </dl>
                     </div>
@@ -535,7 +604,7 @@ export default function DigitalVault() {
                           Conditions
                         </dt>
                         <dd className="text-lg font-medium text-gray-900 dark:text-white">
-                          {vaultData.chronicConditions.filter(c => c.status === ConditionStatus.ACTIVE).length}
+                          {vaultData?.chronicConditions.filter(c => c.status === ConditionStatus.ACTIVE).length || 0}
                         </dd>
                       </dl>
                     </div>
@@ -554,10 +623,10 @@ export default function DigitalVault() {
               <div className="p-6">
                 <div className="flow-root">
                   <ul className="-mb-8">
-                    {vaultData.healthRecords.slice(0, 5).map((record, index) => (
+                    {vaultData?.healthRecords.slice(0, 5).map((record, index) => (
                       <li key={record.id}>
                         <div className="relative pb-8">
-                          {index !== vaultData.healthRecords.slice(0, 5).length - 1 && (
+                          {index !== (vaultData?.healthRecords.slice(0, 5).length || 0) - 1 && (
                             <span className="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700" />
                           )}
                           <div className="relative flex items-start space-x-3">
@@ -612,7 +681,7 @@ export default function DigitalVault() {
 
             <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
               <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                {vaultData.healthRecords.map((record) => (
+                {vaultData?.healthRecords.map((record) => (
                   <li key={record.id}>
                     <div className="px-4 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <div className="flex items-center min-w-0 flex-1">
@@ -665,7 +734,7 @@ export default function DigitalVault() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {vaultData.medications.map((medication) => (
+                {vaultData?.medications.map((medication) => (
                   <div key={medication.medicationId} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -700,7 +769,7 @@ export default function DigitalVault() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {vaultData.allergies.map((allergy) => (
+                {vaultData?.allergies.map((allergy) => (
                   <div key={allergy.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -751,6 +820,124 @@ export default function DigitalVault() {
           </div>
         )}
       </div>
+
+      {/* Add Record Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Add New Record</h3>
+            </div>
+            <div className="px-6 py-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Record Type
+                  </label>
+                  <select 
+                    name="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value="prescription">Prescription</option>
+                    <option value="lab_result">Lab Result</option>
+                    <option value="imaging">Imaging</option>
+                    <option value="consultation">Consultation</option>
+                    <option value="vaccination">Vaccination</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Title *
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Enter record title"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    rows={3}
+                    placeholder="Enter record description"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Provider Name
+                  </label>
+                  <input
+                    type="text"
+                    name="provider_name"
+                    value={formData.provider_name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    placeholder="Enter provider name (doctor, clinic, etc.)"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Record Date *
+                  </label>
+                  <input
+                    type="date"
+                    name="record_date"
+                    value={formData.record_date}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Upload File (Optional)
+                  </label>
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                  />
+                  {selectedFile && (
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                      Selected: {selectedFile.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowAddModal(false)}
+                disabled={isSubmitting}
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddRecord}
+                disabled={isSubmitting || !formData.title || !formData.record_date}
+                className="px-4 py-2 text-sm font-medium text-white bg-curex-teal-600 rounded-md hover:bg-curex-teal-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Adding...' : 'Add Record'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

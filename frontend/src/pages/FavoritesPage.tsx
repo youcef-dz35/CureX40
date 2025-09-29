@@ -62,6 +62,25 @@ export default function FavoritesPage() {
     }
   }, [categoryFilter, sortBy, handleSearch]);
 
+  const loadFavorites = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await favoritesService.getFavorites({
+        search: searchTerm || undefined,
+        category: categoryFilter !== 'all' ? categoryFilter : undefined,
+        sort_by: sortBy,
+        sort_order: 'desc'
+      });
+      setFavorites(data.data || []);
+    } catch (err) {
+      setError('Failed to load favorites');
+      console.error('Error loading favorites:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, categoryFilter, sortBy]);
+
   const clearSearch = () => {
     setSearchTerm('');
   };

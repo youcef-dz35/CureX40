@@ -296,7 +296,17 @@ export default function LandingPage() {
                 </>
               ) : (
                 <Link
-                  to={user?.role === UserRole.PATIENT ? '/medications' : '/pharmacy-dashboard'}
+                  to={
+                    user?.role === UserRole.PATIENT 
+                      ? '/medications' 
+                      : user?.role === UserRole.PHARMACIST 
+                      ? '/pharmacy-dashboard'
+                      : user?.role === UserRole.GOVERNMENT_OFFICIAL
+                      ? '/government-dashboard'
+                      : user?.role === UserRole.INSURANCE_PROVIDER
+                      ? '/insurance-dashboard'
+                      : '/home'
+                  }
                   className="bg-gradient-to-r from-curex-blue-600 to-curex-teal-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:from-curex-blue-700 hover:to-curex-teal-700 transition-all"
                 >
                   Dashboard
@@ -370,7 +380,17 @@ export default function LandingPage() {
                 </>
               ) : (
                 <Link
-                  to={user?.role === UserRole.PATIENT ? '/medications' : '/pharmacy-dashboard'}
+                  to={
+                    user?.role === UserRole.PATIENT 
+                      ? '/medications' 
+                      : user?.role === UserRole.PHARMACIST 
+                      ? '/pharmacy-dashboard'
+                      : user?.role === UserRole.GOVERNMENT_OFFICIAL
+                      ? '/government-dashboard'
+                      : user?.role === UserRole.INSURANCE_PROVIDER
+                      ? '/insurance-dashboard'
+                      : '/home'
+                  }
                   className="group relative overflow-hidden bg-gradient-to-r from-curex-teal-500 to-curex-teal-600 hover:from-curex-teal-600 hover:to-curex-teal-700 text-white font-bold px-12 py-6 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl inline-flex items-center gap-3"
                 >
                   <ShoppingBag className="h-6 w-6" />

@@ -78,7 +78,7 @@ class DashboardController extends Controller
             ->get();
 
         $recent_prescriptions = Prescription::forUser($user->id)
-            ->with(['doctor', 'pharmacy'])
+            ->with(['doctor', 'pharmacy', 'items.medication'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
@@ -179,8 +179,8 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        $medication_stats = Medication::withCount(['orders'])
-            ->orderBy('orders_count', 'desc')
+        $medication_stats = Medication::withCount(['orderItems'])
+            ->orderBy('order_items_count', 'desc')
             ->limit(10)
             ->get();
 
@@ -250,7 +250,7 @@ class DashboardController extends Controller
      */
     private function getInventorySummary($pharmacyId): array
     {
-        $medications = Medication::whereHas('pharmacies', function($q) use ($pharmacyId) {
+        $medications = Medication::whereHas('pharmacyInventories', function($q) use ($pharmacyId) {
             $q->where('pharmacy_id', $pharmacyId);
         })->get();
 

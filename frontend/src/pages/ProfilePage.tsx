@@ -43,7 +43,19 @@ export default function ProfilePage() {
     last_name: user?.last_name || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    address: user?.address || '',
+    address: typeof user?.address === 'string' ? {
+      street: user.address,
+      city: '',
+      state: '',
+      zip_code: '',
+      country: ''
+    } : user?.address || {
+      street: '',
+      city: '',
+      state: '',
+      zip_code: '',
+      country: ''
+    },
     date_of_birth: user?.date_of_birth || '',
     gender: user?.gender || '',
   });
@@ -56,7 +68,19 @@ export default function ProfilePage() {
         last_name: user.last_name || '',
         email: user.email || '',
         phone: user.phone || '',
-        address: user.address || '',
+        address: typeof user.address === 'string' ? {
+          street: user.address,
+          city: '',
+          state: '',
+          zip_code: '',
+          country: ''
+        } : user.address || {
+          street: '',
+          city: '',
+          state: '',
+          zip_code: '',
+          country: ''
+        },
         date_of_birth: user.date_of_birth || '',
         gender: user.gender || '',
       });
@@ -66,10 +90,22 @@ export default function ProfilePage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name.startsWith('address.')) {
+      const field = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [field]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSave = async () => {
@@ -93,7 +129,19 @@ export default function ProfilePage() {
         last_name: updatedUser.last_name || '',
         email: updatedUser.email || '',
         phone: updatedUser.phone || '',
-        address: updatedUser.address || '',
+        address: typeof updatedUser.address === 'string' ? {
+          street: updatedUser.address,
+          city: '',
+          state: '',
+          zip_code: '',
+          country: ''
+        } : updatedUser.address || {
+          street: '',
+          city: '',
+          state: '',
+          zip_code: '',
+          country: ''
+        },
         date_of_birth: updatedUser.date_of_birth || '',
         gender: updatedUser.gender || '',
       });
@@ -116,7 +164,19 @@ export default function ProfilePage() {
       last_name: user?.last_name || '',
       email: user?.email || '',
       phone: user?.phone || '',
-      address: user?.address || '',
+      address: typeof user?.address === 'string' ? {
+        street: user.address,
+        city: '',
+        state: '',
+        zip_code: '',
+        country: ''
+      } : user?.address || {
+        street: '',
+        city: '',
+        state: '',
+        zip_code: '',
+        country: ''
+      },
       date_of_birth: user?.date_of_birth || '',
       gender: user?.gender || '',
     });
@@ -391,15 +451,65 @@ export default function ProfilePage() {
                         Address
                       </label>
                       {isEditing ? (
-                        <textarea
-                          name="address"
-                          value={formData.address}
-                          onChange={handleInputChange}
-                          rows={3}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-curex-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                        />
+                        <div className="space-y-2">
+                          <input
+                            type="text"
+                            name="address.street"
+                            value={formData.address.street}
+                            onChange={handleInputChange}
+                            placeholder="Street Address"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-curex-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              name="address.city"
+                              value={formData.address.city}
+                              onChange={handleInputChange}
+                              placeholder="City"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-curex-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            />
+                            <input
+                              type="text"
+                              name="address.state"
+                              value={formData.address.state}
+                              onChange={handleInputChange}
+                              placeholder="State"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-curex-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <input
+                              type="text"
+                              name="address.zip_code"
+                              value={formData.address.zip_code}
+                              onChange={handleInputChange}
+                              placeholder="ZIP Code"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-curex-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            />
+                            <input
+                              type="text"
+                              name="address.country"
+                              value={formData.address.country}
+                              onChange={handleInputChange}
+                              placeholder="Country"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-curex-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            />
+                          </div>
+                        </div>
                       ) : (
-                        <p className="text-gray-900 dark:text-white">{user?.address || 'Not provided'}</p>
+                        <p className="text-gray-900 dark:text-white">
+                          {(() => {
+                            if (typeof user?.address === 'string') {
+                              return user.address;
+                            }
+                            if (user?.address && typeof user.address === 'object' && 'street' in user.address) {
+                              const addr = user.address as any;
+                              return `${addr.street}, ${addr.city}, ${addr.state} ${addr.zip_code}`;
+                            }
+                            return 'Not provided';
+                          })()}
+                        </p>
                       )}
                     </div>
                   </div>
